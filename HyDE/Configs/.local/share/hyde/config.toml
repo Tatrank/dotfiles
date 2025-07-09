@@ -6,7 +6,7 @@
 
 # Wallpaper configuration.
 [wallpaper]
-custom_paths = []  # List of paths to search for wallpapers.
+custom_paths = [ "~/.config/Ax-Shell/assets/wallpapers" ]  # List of paths to search for wallpapers.
 backend = "swww"  # Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH
 # swwwallselect.sh configuration.
 [wallpaper.swww]
@@ -203,13 +203,13 @@ background_path = ""  # LockScreen's Background path.
 [hyprland_start]
 apptray_bluetooth = "blueman-applet"  # Bluetooth applet.
 auth_dialogue = "polkitkdeauth.sh"  # Authentication dialogue.
-bar = "hyde-shell waybar --watch"  # Bar.
+bar = ""  # Bar.
 battery_notify = "batterynotify.sh"  # Battery notification script.
 dbus_share_picker = "dbus-update-activation-environment --systemd --all"  # DBus share picker.
 idle_daemon = "hypridle"  # Idle daemon.
 image_clipboard = "wl-paste --type image --watch cliphist store"  # Image clipboard.
 network_manager = "nm-applet --indicator"  # Network manager.
-notifications = "swaync"  # Notifications.
+notifications = ""  # Notifications.
 removable_media = "udiskie --no-automount --smart-tray"  # Removable media manager.
 systemd_share_picker = "systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"  # Systemd share picker.
 text_clipboard = "wl-paste --type text --watch cliphist store"  # Text clipboard.

@@ -231,9 +231,8 @@ class WallpaperSelector(Box):
         if self.matugen_switcher.get_active():
             exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme}')
         else:
-            exec_shell_command_async(
-                f'swww img "{full_path}" -t outer --transition-duration 1.5 --transition-step 255 --transition-fps 60 -f Nearest'
-            )
+            # Use HyDE's wallpaper.sh for wallpaper and colors
+            exec_shell_command_async(f'~/.local/lib/hyde/wallpaper.sh -s "{full_path}" --global')
         
         print(f"Set random wallpaper: {file_name}")
 
@@ -310,18 +309,19 @@ class WallpaperSelector(Box):
         file_name = model[path][1]
         full_path = os.path.join(data.WALLPAPERS_DIR, file_name)
         selected_scheme = self.scheme_dropdown.get_active_id()
+        
+        # Create Ax-Shell symlink (for compatibility)
         current_wall = os.path.expanduser(f"~/.current.wall")
         if os.path.isfile(current_wall) or os.path.islink(current_wall):
             os.remove(current_wall)
         os.symlink(full_path, current_wall)
+        
         if self.matugen_switcher.get_active():
-            # Matugen is enabled: run the normal command.
+            # Use Matugen for colors
             exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme}')
         else:
-            # Matugen is disabled: run the alternative swww command.
-            exec_shell_command_async(
-                f'swww img "{full_path}" -t outer --transition-duration 1.5 --transition-step 255 --transition-fps 60 -f Nearest'
-            )
+            # Use HyDE's wallpaper.sh for wallpaper and colors
+            exec_shell_command_async(f'~/.local/lib/hyde/wallpaper.sh -s "{full_path}" --global')
 
     def on_scheme_changed(self, combo):
         selected_scheme = combo.get_active_id()

@@ -107,7 +107,8 @@ class PowerMenu(Box):
 
     def lock(self, *args):
         print("Locking screen...")
-        exec_shell_command_async("loginctl lock-session")
+        # Použít HyDE hyprlock místo loginctl
+        exec_shell_command_async("~/.local/lib/hyde/hyprlock.sh")
         self.close_menu()
 
     def suspend(self, *args):
