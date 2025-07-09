@@ -715,7 +715,7 @@ type      = "object"
     type        = "string"
 
 [properties.hyprland_start.properties.bar]
-    default     = ""
+    default     = "hyde-shell waybar --watch"
     description = "Bar."
     type        = "string"
 
@@ -745,7 +745,7 @@ type      = "object"
     type        = "string"
 
 [properties.hyprland_start.properties.notifications]
-    default     = ""
+    default     = "swaync"
     description = "Notifications."
     type        = "string"
 

@@ -144,27 +144,17 @@ EOF
     #--------------------------------#
     # add nvidia drivers to the list #
     #--------------------------------#
-
-
-
-    # UnMark if the OS does not have nvidia drivers
-
-
-
-#    if nvidia_detect; then
-#        if [ ${flg_Nvidia} -eq 1 ]; then
-#            cat /usr/lib/modules/*/pkgbase | while read -r kernel; do
-#                echo "${kernel}-headers" >>"${scrDir}/install_pkg.lst"
-#            done
-#            nvidia_detect --drivers >>"${scrDir}/install_pkg.lst"
-#        else
-#            print_log -warn "Nvidia" "Nvidia GPU detected but ignored..."
-#        fi
-#    fi
-#    nvidia_detect --verbose
-
-
-
+ #  if nvidia_detect; then
+ #      if [ ${flg_Nvidia} -eq 1 ]; then
+ #          cat /usr/lib/modules/*/pkgbase | while read -r kernel; do
+ #              echo "${kernel}-headers" >>"${scrDir}/install_pkg.lst"
+ #          done
+ #          nvidia_detect --drivers >>"${scrDir}/install_pkg.lst"
+ #      else
+ #          print_log -warn "Nvidia" "Nvidia GPU detected but ignored..."
+ #      fi
+ #  fi
+    nvidia_detect --verbose
 
     #----------------#
     # get user prefs #
@@ -308,48 +298,11 @@ fi
 if [ $flg_Install -eq 1 ]; then
     echo ""
     print_log -g "Installation" " :: " "COMPLETED!"
-    
-    # Ask to install Ax-Shell
-    echo ""
-    print_log -c "Would you like to install Ax-Shell integration? [Y/n]"
-    read -r install_axshell
-    
-    # Default to yes if Enter is pressed
-    if [[ "$install_axshell" != [Nn] ]]; then
-        print_log -g "Installing Ax-Shell..."
-        
-        # Define Ax-Shell directory relative to the script
-        AXSHELL_DIR="${scrDir}/../Ax-Shell"
-        
-        if [ -d "$AXSHELL_DIR" ]; then
-            # Run Ax-Shell installer
-            if [ -f "$AXSHELL_DIR/install.sh" ]; then
-                print_log -g "Running Ax-Shell installer..."
-                
-                # Check if running in test mode
-                if [ "${flg_DryRun}" -eq 1 ]; then
-                    print_log -n "[test-run] " -b "Ax-Shell :: " "Would run ${AXSHELL_DIR}/install.sh"
-                else
-                    cd "$AXSHELL_DIR" || { print_log -r "Error: Cannot access Ax-Shell directory"; }
-                    bash "${AXSHELL_DIR}/install.sh"
-                    cd "${scrDir}" || { print_log -r "Error: Cannot return to script directory"; }
-                    print_log -g "Ax-Shell installation completed!"
-                fi
-            else
-                print_log -r "Error: Ax-Shell install script not found at ${AXSHELL_DIR}/install.sh"
-            fi
-        else
-            print_log -r "Error: Ax-Shell directory not found at ${AXSHELL_DIR}"
-            print_log -y "Make sure Ax-Shell is in the HyDE directory structure"
-        fi
-    else
-        print_log -y "Skipping Ax-Shell installation"
-    fi
 fi
 print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HYDE_LOG}"
 if [ $flg_Install -eq 1 ] ||
     [ $flg_Restore -eq 1 ] ||
-[ $flg_Service -eq 1 ] &&
+    [ $flg_Service -eq 1 ] &&
     [ $flg_DryRun -ne 1 ]; then
     print_log -stat "HyDE" "It is not recommended to use newly installed or upgraded HyDE without rebooting the system. Do you want to reboot the system? (y/N)"
     read -r answer

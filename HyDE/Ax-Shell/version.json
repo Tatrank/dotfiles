@@ -1,7 +1,0 @@
-{
-	"version": "0.0.19",
-  "pkg_update": false,
-	"changelog": [
-    "<b>tweak:</b> Moved corners module to a bottom layer to avoid passthrough issues."
-	]
-}

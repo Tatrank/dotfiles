@@ -109,9 +109,10 @@ source "${scrDir}/globalcontrol.sh"
 [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && hyprctl keyword misc:disable_autoreload 1 -q
 sanitize_hypr_theme "${HYDE_THEME_DIR}/hypr.theme" "${XDG_CONFIG_HOME}/hypr/themes/theme.conf"
 
-
+# shellcheck disable=SC2154
 
   GTK_THEME="Wallbash-Gtk"
+
 GTK_ICON="$(get_hyprConf "ICON_THEME")"
 CURSOR_THEME="$(get_hyprConf "CURSOR_THEME")"
 CURSOR_SIZE=${_CURSOR_SIZE:-"$(get_hyprConf "CURSOR_SIZE")"}
