@@ -4,8 +4,14 @@ set -e  # Exit immediately if a command fails
 set -u  # Treat unset variables as errors
 set -o pipefail  # Prevent errors in a pipeline from being masked
 
-REPO_URL="https://github.com/Axenide/Ax-Shell.git"
+# Determine source and installation directories
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+HYDE_DIR="$(dirname "$SCRIPT_DIR")"
+SOURCE_DIR="$SCRIPT_DIR"  # The existing Ax-Shell directory within HyDE
 INSTALL_DIR="$HOME/.config/Ax-Shell"
+
+echo "Installing Ax-Shell from local files at $SOURCE_DIR"
+
 PACKAGES=(
   brightnessctl
   cava
@@ -68,14 +74,20 @@ elif ! command -v yay &>/dev/null; then
     rm -rf "$tmpdir"
 fi
 
-# Clone or update the repository
+# Copy from existing source instead of cloning
 if [ -d "$INSTALL_DIR" ]; then
-    echo "Updating Ax-Shell..."
-    git -C "$INSTALL_DIR" pull
+    echo "Updating existing Ax-Shell installation..."
+    rsync -av --exclude='.git' --exclude='.gitignore' "$SOURCE_DIR/" "$INSTALL_DIR/"
 else
-    echo "Cloning Ax-Shell..."
-    git clone --depth=1 "$REPO_URL" "$INSTALL_DIR"
+    echo "Installing Ax-Shell from local files..."
+    mkdir -p "$INSTALL_DIR"
+    rsync -av --exclude='.git' --exclude='.gitignore' "$SOURCE_DIR/" "$INSTALL_DIR/"
 fi
+
+# Create symlinks for HyDE integration
+echo "Creating HyDE integration symlinks..."
+mkdir -p "$HOME/.config/hypr"
+ln -sf "$HYDE_DIR/Configs/.config/hypr/hyprlock.conf" "$HOME/.config/hypr/hyprlock.conf" 2>/dev/null || true
 
 # Install required packages using the detected AUR helper (only if missing)
 echo "Installing required packages..."
@@ -119,4 +131,4 @@ echo "Starting Ax-Shell..."
 killall ax-shell 2>/dev/null || true
 uwsm app -- python "$INSTALL_DIR/main.py" > /dev/null 2>&1 & disown
 
-echo "Installation complete."
+echo "Installation complete. Ax-Shell has been integrated with HyDE."
