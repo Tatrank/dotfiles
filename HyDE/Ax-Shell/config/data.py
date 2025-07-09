@@ -24,9 +24,39 @@ HOME_DIR = os.path.expanduser("~")
 
 CONFIG_DIR = os.path.expanduser(f"~/.config/{APP_NAME}")
 
-screen = Gdk.Screen.get_default()
-CURRENT_WIDTH = screen.get_width()
-CURRENT_HEIGHT = screen.get_height()
+# Get screen dimensions in a way that works with both X11 and Wayland
+def get_screen_dimensions():
+    """Get screen dimensions in a way compatible with both X11 and Wayland"""
+    try:
+        # Try using GDK Screen first (X11 approach)
+        screen = Gdk.Screen.get_default()
+        if screen:
+            return screen.get_width(), screen.get_height()
+        
+        # For Wayland, use the default display's monitor
+        display = Gdk.Display.get_default()
+        if display:
+            monitor = display.get_primary_monitor() or display.get_monitor(0)
+            if monitor:
+                geometry = monitor.get_geometry()
+                return geometry.width, geometry.height
+            
+        # Try using hyprctl as a fallback
+        import subprocess
+        import json
+        result = subprocess.run(["hyprctl", "-j", "monitors"], capture_output=True, text=True)
+        if result.returncode == 0:
+            monitors = json.loads(result.stdout)
+            if monitors:
+                return monitors[0].get("width", 1920), monitors[0].get("height", 1080)
+    except Exception as e:
+        print(f"Error detecting screen size: {e}")
+    
+    # Default fallback values
+    return 1920, 1080
+
+# Set screen dimensions
+CURRENT_WIDTH, CURRENT_HEIGHT = get_screen_dimensions()
 
 
 WALLPAPERS_DIR_DEFAULT = get_relative_path("../assets/wallpapers_example")
