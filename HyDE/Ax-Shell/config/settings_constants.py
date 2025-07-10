@@ -32,7 +32,7 @@ DEFAULTS = {
     "suffix_tmux": "T",
     "prefix_cliphist": "SUPER SHIFT",
     "suffix_cliphist": "V",
-    "prefix_toolbox": "SUPER SHIFT",
+    "prefix_toolbox": "SUPER SHIFT ALT",
     "suffix_toolbox": "S",
     "prefix_overview": "SUPER SHIFT",
     "suffix_overview": "TAB",

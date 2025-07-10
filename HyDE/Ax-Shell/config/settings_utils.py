@@ -260,7 +260,7 @@ bind = {bind_vars.get('prefix_kanban', 'SUPER')}, {bind_vars.get('suffix_kanban'
 bind = {bind_vars.get('prefix_launcher', 'SUPER')}, {bind_vars.get('suffix_launcher', 'R')}, exec, $fabricSend 'notch.open_notch("launcher")' # App Launcher
 bind = {bind_vars.get('prefix_tmux', 'SUPER SHIFT')}, {bind_vars.get('suffix_tmux', 'T')}, exec, $fabricSend 'notch.open_notch("tmux")' # Tmux
 bind = {bind_vars.get('prefix_cliphist', 'SUPER SHIFT')}, {bind_vars.get('suffix_cliphist', 'V')}, exec, $fabricSend 'notch.open_notch("cliphist")' # Clipboard History
-bind = {bind_vars.get('prefix_toolbox', 'SUPER SHIFT')}, {bind_vars.get('suffix_toolbox', 'S')}, exec, $fabricSend 'notch.open_notch("tools")' # Toolbox
+bind = {bind_vars.get('prefix_toolbox', 'SUPER SHIFT ALT')}, {bind_vars.get('suffix_toolbox', 'S')}, exec, $fabricSend 'notch.open_notch("tools")' # Toolbox
 bind = {bind_vars.get('prefix_overview', 'SUPER SHIFT')}, {bind_vars.get('suffix_overview', 'TAB')}, exec, $fabricSend 'notch.open_notch("overview")' # Overview
 bind = {bind_vars.get('prefix_wallpapers', 'SUPER')}, {bind_vars.get('suffix_wallpapers', 'COMMA')}, exec, $fabricSend 'notch.open_notch("wallpapers")' # Wallpapers
 bind = {bind_vars.get('prefix_randwall', 'SUPER')}, {bind_vars.get('suffix_randwall', 'COMMA')}, exec, $fabricSend 'notch.dashboard.wallpapers.set_random_wallpaper(None, external=True)' # Random Wallpaper
