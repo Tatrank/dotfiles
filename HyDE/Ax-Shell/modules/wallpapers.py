@@ -216,54 +216,31 @@ class WallpaperSelector(Box):
 
     def set_random_wallpaper(self, widget, external=False):
         if not self.files:
+            print("No wallpapers available to set a random one.")
             return
-            
+
         file_name = random.choice(self.files)
         full_path = os.path.join(data.WALLPAPERS_DIR, file_name)
         selected_scheme = self.scheme_dropdown.get_active_id()
         current_wall = os.path.expanduser(f"~/.current.wall")
 
-        if os.path.isfile(current_wall) or os.path.islink(current_wall):
-            os.unlink(current_wall)
+        if os.path.isfile(current_wall) or os.path.islink(current_wall): # Check for link too
+            os.remove(current_wall)
         os.symlink(full_path, current_wall)
 
-        # HyDE Integration - Set wallpaper using HyDE wallpaper system
-        self._apply_hyde_wallpaper(full_path)
-
         if self.matugen_switcher.get_active():
-            exec_shell_command_async(f"matugen image {full_path} --mode {selected_scheme} --type css")
+            exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme}')
         else:
-            exec_shell_command_async("swww img ~/.current.wall")
-
+            exec_shell_command_async(
+                f'swww img "{full_path}" -t outer --transition-duration 1.5 --transition-step 255 --transition-fps 60 -f Nearest'
+            )
+        
         print(f"Set random wallpaper: {file_name}")
+
         if external:
-            pass
+            exec_shell_command_async(f"notify-send '🎲 Wallpaper' 'Setting a random wallpaper 🎨' -a '{data.APP_NAME_CAP}' -i '{full_path}' -e")
+
         self.randomize_dice_icon()
-
-    def on_wallpaper_selected(self, iconview, path):
-        model = iconview.get_model()
-        file_name = model[path][1]
-        full_path = os.path.join(data.WALLPAPERS_DIR, file_name)
-        selected_scheme = self.scheme_dropdown.get_active_id()
-        current_wall = os.path.expanduser(f"~/.current.wall")
-        
-        if os.path.isfile(current_wall) or os.path.islink(current_wall):
-            os.unlink(current_wall)
-        os.symlink(full_path, current_wall)
-        
-        # HyDE Integration - Set wallpaper using HyDE wallpaper system
-        self._apply_hyde_wallpaper(full_path)
-        
-        if self.matugen_switcher.get_active():
-            exec_shell_command_async(f"matugen image {full_path} --mode {selected_scheme} --type css")
-        else:
-            exec_shell_command_async("swww img ~/.current.wall")
-
-    def _apply_hyde_wallpaper(self, wallpaper_path):
-        """Apply wallpaper using HyDE system for color theme synchronization"""
-        hyde_wallpaper_cmd = f"~/.local/lib/hyde/wallpaper.sh --set '{wallpaper_path}' --backend swww --global"
-        exec_shell_command_async(f"bash -c '{hyde_wallpaper_cmd}'")
-        print(f"Applied wallpaper through HyDE: {wallpaper_path}")
 
     def setup_file_monitor(self):
         gfile = Gio.File.new_for_path(data.WALLPAPERS_DIR)
@@ -327,6 +304,40 @@ class WallpaperSelector(Box):
             self.selected_index = -1
         elif len(model) > 0:
             self.update_selection(0)
+
+    def on_wallpaper_selected(self, iconview, path):
+        model = iconview.get_model()
+        file_name = model[path][1]
+        full_path = os.path.join(data.WALLPAPERS_DIR, file_name)
+
+        # --- HyDE Integration ---
+        # This command sequence ensures HyDE's wallbash is set to 'auto' mode (1)
+        # and then applies the new wallpaper, which triggers the color update scripts.
+        hyde_lib_dir = os.path.expanduser("~/.local/lib/hyde")
+        set_conf_cmd = f"source {hyde_lib_dir}/globalcontrol.sh && set_conf enableWallDcol 1"
+        apply_wallpaper_cmd = f"{hyde_lib_dir}/wallpaper.sh --set '{full_path}' --global"
+
+        # Execute the commands
+        exec_shell_command_async(f"bash -c '{set_conf_cmd} && {apply_wallpaper_cmd}'")
+        print(f"HyDE: Set wallbash to auto and applied wallpaper: {full_path}")
+        # --- End HyDE Integration ---
+
+        # The original logic can be removed or commented out if HyDE handles everything.
+        # If you want to keep it as a fallback, you can add a check for HyDE's existence.
+        #
+        selected_scheme = self.scheme_dropdown.get_active_id()
+        current_wall = os.path.expanduser(f"~/.current.wall")
+        if os.path.isfile(current_wall) or os.path.islink(current_wall):
+            os.remove(current_wall)
+        os.symlink(full_path, current_wall)
+        if self.matugen_switcher.get_active():
+            # Matugen is enabled: run the normal command.
+            exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme}')
+        else:
+            # Matugen is disabled: run the alternative swww command.
+            exec_shell_command_async(
+                f'swww img "{full_path}" -t outer --transition-duration 1.5 --transition-step 255 --transition-fps 60 -f Nearest'
+            )
 
     def on_scheme_changed(self, combo):
         selected_scheme = combo.get_active_id()
