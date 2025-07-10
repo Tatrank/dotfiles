@@ -4,8 +4,10 @@ set -e  # Exit immediately if a command fails
 set -u  # Treat unset variables as errors
 set -o pipefail  # Prevent errors in a pipeline from being masked
 
-REPO_URL="https://github.com/Axenide/Ax-Shell.git"
+# Get the directory where this script is located (the Ax-Shell source directory)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_DIR="$HOME/.config/Ax-Shell"
+
 PACKAGES=(
   brightnessctl
   cava
@@ -68,13 +70,32 @@ elif ! command -v yay &>/dev/null; then
     rm -rf "$tmpdir"
 fi
 
-# Clone or update the repository
+# Copy or update the local repository
 if [ -d "$INSTALL_DIR" ]; then
-    echo "Updating Ax-Shell..."
-    git -C "$INSTALL_DIR" pull
+    echo "Updating Ax-Shell from local source..."
+    
+    # Create backup of user config if it exists
+    if [ -f "$INSTALL_DIR/config/config.json" ]; then
+        echo "Backing up existing config..."
+        cp "$INSTALL_DIR/config/config.json" "$INSTALL_DIR/config/config.json.backup"
+    fi
+    
+    # Remove old installation but preserve user data
+    rm -rf "$INSTALL_DIR"
+    mkdir -p "$INSTALL_DIR"
+    
+    # Copy from local source
+    cp -r "$SCRIPT_DIR/"* "$INSTALL_DIR/"
+    
+    # Restore user config if backup exists
+    if [ -f "$INSTALL_DIR/config/config.json.backup" ]; then
+        echo "Restoring user config..."
+        mv "$INSTALL_DIR/config/config.json.backup" "$INSTALL_DIR/config/config.json"
+    fi
 else
-    echo "Cloning Ax-Shell..."
-    git clone --depth=1 "$REPO_URL" "$INSTALL_DIR"
+    echo "Installing Ax-Shell from local source..."
+    mkdir -p "$INSTALL_DIR"
+    cp -r "$SCRIPT_DIR/"* "$INSTALL_DIR/"
 fi
 
 # Install required packages using the detected AUR helper (only if missing)
