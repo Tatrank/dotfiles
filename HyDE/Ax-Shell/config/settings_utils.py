@@ -288,9 +288,7 @@ general {{
     layout = dwindle
 }}
 
-cursor {{
-  no_warps=true
-}}
+
 
 decoration {{
     blur {{
@@ -310,14 +308,7 @@ decoration {{
     }}
 }}
 
-animations {{
-    enabled = yes
-    bezier = myBezier, 0.4, 0.0, 0.2, 1.0
-    animation = windows, 1, 2.5, myBezier, popin 80%
-    animation = border, 1, 2.5, myBezier
-    animation = fade, 1, 2.5, myBezier
-    animation = workspaces, 1, 2.5, myBezier, {animation_type} 20%
-}}
+
 """
 
 
