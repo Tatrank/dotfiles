@@ -346,33 +346,12 @@ type      = "object"
     description = "wallbash configuration."
     type        = "object"
 
-[properties.wallbash.properties.skip_template]
-    default     = [ "" ]
-    description = "Templates to skip when using wallbash."
-    options     = [ "waybar.dcol", "waybar.theme" ]
-    type        = "array"
+
 
 [properties.wallbash.properties.skip_template.items]
     type = "string"
 
-[properties.waybar]
-    description = "waybar configuration."
-    type        = "object"
 
-[properties.waybar.properties.font]
-    default     = "JetBrainsMono Nerd Font"
-    description = "Font for waybar."
-    type        = "string"
-
-[properties.waybar.properties.scale]
-    default     = 10
-    description = "Total scaling for waybar."
-    type        = "integer"
-
-[properties.waybar.properties.icon_size]
-    default     = 10
-    description = "Icon size for waybar."
-    type        = "integer"
 
 [properties.weather]
     description = "Weather configuration."
@@ -393,15 +372,7 @@ type      = "object"
     description = "Windspeed unit ('km/h' or 'mph')."
     type        = "string"
 
-[properties.weather.properties.show_icon]
-    default     = true
-    description = "Show the weather icon in waybar."
-    type        = "boolean"
 
-[properties.weather.properties.show_location]
-    default     = true
-    description = "Show the location in waybar."
-    type        = "boolean"
 
 [properties.weather.properties.show_today]
     default     = true
@@ -427,10 +398,7 @@ type      = "object"
     description = "Maximum number of cava instances."
     type        = "integer"
 
-[properties."cava.stdout".properties.bar]
-    default     = "▁▂▃▄▅▆▇█"
-    description = "Bar characters for cava."
-    type        = "string"
+
 
 [properties."cava.stdout".properties.width]
     default     = 20
@@ -456,10 +424,7 @@ type      = "object"
     description = "Maximum number of cava instances."
     type        = "integer"
 
-[properties."cava.hyprlock".properties.bar]
-    default     = "▁▂▃▄▅▆▇█"
-    description = "Bar characters for cava."
-    type        = "string"
+
 
 [properties."cava.hyprlock".properties.width]
     default     = 20
@@ -476,34 +441,15 @@ type      = "object"
     description = "Standby character for cava."
     type        = "string"
 
-[properties."cava.waybar"]
-    description = "'cava.sh waybar' configuration."
-    type        = "object"
 
-[properties."cava.waybar".properties.max_instances]
-    default     = 1
-    description = "Maximum number of cava instances."
-    type        = "integer"
 
-[properties."cava.waybar".properties.bar]
-    default     = "▁▂▃▄▅▆▇█"
-    description = "Bar characters for cava."
-    type        = "string"
 
-[properties."cava.waybar".properties.width]
-    default     = 20
-    description = "Width of the cava output."
-    type        = "integer"
 
-[properties."cava.waybar".properties.range]
-    default     = 7
-    description = "Number of bars minus one."
-    type        = "integer"
 
-[properties."cava.waybar".properties.standby]
-    default     = "🎶"
-    description = "Standby character for cava."
-    type        = "string"
+
+
+
+
 
 [properties."hypr.config"]
     description = "Hypr configuration."
@@ -625,10 +571,7 @@ type      = "object"
     description = "Quick apps."
     type        = "string"
 
-[properties.hyprland.properties.bar]
-    default     = "waybar"
-    description = "Bar."
-    type        = "string"
+
 
 [properties.hyprland.properties.color_scheme]
     default     = "prefer-dark"
@@ -714,10 +657,7 @@ type      = "object"
     description = "Authentication dialogue."
     type        = "string"
 
-[properties.hyprland_start.properties.bar]
-    default     = "hyde-shell waybar --watch"
-    description = "Bar."
-    type        = "string"
+
 
 [properties.hyprland_start.properties.battery_notify]
     default     = "batterynotify.sh"
@@ -744,10 +684,7 @@ type      = "object"
     description = "Network manager."
     type        = "string"
 
-[properties.hyprland_start.properties.notifications]
-    default     = "swaync"
-    description = "Notifications."
-    type        = "string"
+
 
 [properties.hyprland_start.properties.removable_media]
     default     = "udiskie --no-automount --smart-tray"

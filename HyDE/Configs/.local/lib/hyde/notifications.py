@@ -5,9 +5,8 @@ import json
 import sys
 
 def get_dunst_history():
-    result = subprocess.run(['dunstctl', 'history'], stdout=subprocess.PIPE, check=True)
-    history = json.loads(result.stdout.decode('utf-8'))
-    return history
+   
+    return None
 
 def format_history(history):
     count = len(history['data'][0])
@@ -46,10 +45,7 @@ def format_history(history):
     return formatted_history
 
 def main():
-    history = get_dunst_history()
-    formatted_history = format_history(history)
-    sys.stdout.write(json.dumps(formatted_history) + '\n')
-    sys.stdout.flush()
+   pass
 
 if __name__ == "__main__":
     main()

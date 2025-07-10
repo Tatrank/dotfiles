@@ -58,10 +58,7 @@ P|${HOME}/.config/Code - OSS/User|settings.json|code
 P|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
 P|${HOME}/.config/VSCodium/User|settings.json|vscodium
 
- Bar 
-P|${HOME}/.config/waybar|user-style.css config.jsonc theme.css style.css|waybar
-I|${HOME}/.config/waybar|modules styles layouts menus|waybar
-S|${HOME}/.local/share|waybar|waybar
+
 
  Terminal 
 P|${HOME}/.config|lsd|lsd
@@ -116,8 +113,7 @@ P|${HOME}/.config|code-flags.conf|visual-studio-code-bin
 P|${HOME}/.config|codium-flags.conf|vscodium
 P|${HOME}/.config|electron-flags.conf|electron
 
- Notifications 
-S|${HOME}/.config|dunst|dunst
+
 
  Gaming 
 S|${HOME}/.config|MangoHud|mangohud

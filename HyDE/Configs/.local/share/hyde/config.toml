@@ -118,35 +118,12 @@ icon_size = 10  # Icon size for waybar.
 temperature_unit = "c"  # Temperature unit ('c' or 'f').
 time_format = "24h"  # Time format ('12h' or '24h').
 windspeed_unit = "km/h"  # Windspeed unit ('km/h' or 'mph').
-show_icon = true  # Show the weather icon in waybar.
-show_location = true  # Show the location in waybar.
+show_icon = false  # Show the weather icon in waybar.
+show_location = false  # Show the location in waybar.
 show_today = true  # Show detailed description of today in tooltip.
 forecast_days = 3  # Number of days to show forecast (0-3).
 location = ""  # Location/coordinates string for the weather output.
 
-# 'cava.sh stdout' configuration.
-[cava.stdout]
-max_instances = 1  # Maximum number of cava instances.
-bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
-width = 20  # Width of the cava output.
-range = 7  # Number of bars minus one.
-standby = "🎶"  # Standby character for cava.
-
-# 'cava.sh hyprlock' configuration.
-[cava.hyprlock]
-max_instances = 1  # Maximum number of cava instances.
-bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
-width = 20  # Width of the cava output.
-range = 7  # Number of bars minus one.
-standby = "🎶"  # Standby character for cava.
-
-# 'cava.sh waybar' configuration.
-[cava.waybar]
-max_instances = 1  # Maximum number of cava instances.
-bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
-width = 20  # Width of the cava output.
-range = 7  # Number of bars minus one.
-standby = "🎶"  # Standby character for cava.
 
 # Hypr configuration.
 [hypr.config]
@@ -183,7 +160,6 @@ idle = "hypridle"  # Idle manager.
 lockscreen = "lockscreen.sh"  # Lockscreen.
 terminal = "kitty"  # Terminal.
 quickapps = "kitty"  # Quick apps.
-bar = "waybar"  # Bar.
 color_scheme = "prefer-dark"  # Color scheme.
 gtk_theme = "Wallbash-Gtk"  # GTK theme.
 icon_theme = "Tela-circle-dracula"  # Icon theme.
@@ -203,13 +179,11 @@ background_path = ""  # LockScreen's Background path.
 [hyprland_start]
 apptray_bluetooth = "blueman-applet"  # Bluetooth applet.
 auth_dialogue = "polkitkdeauth.sh"  # Authentication dialogue.
-bar = "hyde-shell waybar --watch"  # Bar.
 battery_notify = "batterynotify.sh"  # Battery notification script.
 dbus_share_picker = "dbus-update-activation-environment --systemd --all"  # DBus share picker.
 idle_daemon = "hypridle"  # Idle daemon.
 image_clipboard = "wl-paste --type image --watch cliphist store"  # Image clipboard.
 network_manager = "nm-applet --indicator"  # Network manager.
-notifications = "swaync"  # Notifications.
 removable_media = "udiskie --no-automount --smart-tray"  # Removable media manager.
 systemd_share_picker = "systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"  # Systemd share picker.
 text_clipboard = "wl-paste --type text --watch cliphist store"  # Text clipboard.

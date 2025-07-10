@@ -147,8 +147,11 @@ fn_wallbash() {
 
 scrDir="$(dirname "$(realpath "$0")")"
 export scrDir
+
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
+enableWallDcol=1
+export enableWallDcol
 confDir="${XDG_CONFIG_HOME:-$(xdg-user-dir CONFIG)}"
 wallbash_image="${1}"
 
@@ -221,11 +224,9 @@ fi
 set +a
 
 if [ -z "$GTK_THEME" ]; then
-    if [ "${enableWallDcol}" -eq 0 ]; then
-        GTK_THEME="$(get_hyprConf "GTK_THEME")"
-    else
+ 
         GTK_THEME="Wallbash-Gtk"
-    fi
+   
 fi
 [ -z "$GTK_ICON" ] && GTK_ICON="$(get_hyprConf "ICON_THEME")"
 [ -z "$CURSOR_THEME" ] && CURSOR_THEME="$(get_hyprConf "CURSOR_THEME")"

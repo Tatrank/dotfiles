@@ -28,7 +28,7 @@ hyprland                                               # wlroots-based wayland c
 dunst                                                  # notification daemon
 rofi-wayland                                           # application launcher
 waybar                                                 # system bar
-swww                                                   # wallpaper
+swww-git                                                   # wallpaper
 hyprlock                                               # lock screen
 wlogout                                                # logout menu
 grim                                                   # screenshot tool
@@ -38,6 +38,7 @@ satty                                                  # Modern Screenshot Annot
 cliphist                                               # clipboard manager
 wl-clip-persist                                        # Keep Wayland clipboard even after programs close (avoids crashes)
 hyprsunset                                             # blue light filter
+python-fabric                                          # for axshell
 
 # --------------------------------------------------- // Dependencies
 polkit-gnome                                           # authentication agent

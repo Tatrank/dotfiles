@@ -136,7 +136,6 @@ Hyprland start configuration.
 | idle_daemon | Idle daemon. | hypridle |
 | image_clipboard | Image clipboard. | wl-paste --type image --watch cliphist store |
 | network_manager | Network manager. | nm-applet --indicator |
-| notifications | Notifications. | swaync |
 | removable_media | Removable media manager. | udiskie --no-automount --smart-tray |
 | systemd_share_picker | Systemd share picker. | systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP |
 | text_clipboard | Text clipboard. | wl-paste --type text --watch cliphist store |

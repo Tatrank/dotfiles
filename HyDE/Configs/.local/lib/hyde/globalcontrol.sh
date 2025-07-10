@@ -243,10 +243,11 @@ get_themes() {
 [ -f "${HYDE_RUNTIME_DIR}/environment" ] && source "${HYDE_RUNTIME_DIR}/environment"
 [ -f "$HYDE_STATE_HOME/staterc" ] && source "$HYDE_STATE_HOME/staterc"
 [ -f "$HYDE_STATE_HOME/config" ] && source "$HYDE_STATE_HOME/config"
+  enableWallDcol=1
 
 case "${enableWallDcol}" in
 0 | 1 | 2 | 3) ;;
-*) enableWallDcol=0 ;;
+*) enableWallDcol=1 ;;
 esac
 
 if [ -z "${HYDE_THEME}" ] || [ ! -d "${HYDE_CONFIG_HOME}/themes/${HYDE_THEME}" ]; then
