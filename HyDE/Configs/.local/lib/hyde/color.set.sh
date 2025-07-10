@@ -150,8 +150,7 @@ export scrDir
 
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
-enableWallDcol=1
-export enableWallDcol
+
 confDir="${XDG_CONFIG_HOME:-$(xdg-user-dir CONFIG)}"
 wallbash_image="${1}"
 
