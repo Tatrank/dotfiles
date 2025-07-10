@@ -1,3 +1,7 @@
+
+
+
+
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 # shellcheck disable=SC1091
@@ -161,6 +165,14 @@ deploy_psv() {
                 if [ "${ctlFlag}" != "B" ]; then
                     [ "${flg_DryRun}" -ne 1 ] && cp -r "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
                     print_log -y "[*populate*]" -b " :: " "${pth}" -r " <--  " "${CfgDir}${tgt}/${cfg_chk}"
+                fi
+            fi
+
+            # Set executable permissions for hyde-shell and hydectl
+            if [[ "${cfg_chk}" == "hyde-shell" || "${cfg_chk}" == "hydectl" ]]; then
+                if [ -f "${crnt_cfg}" ] && [ "${flg_DryRun}" -ne 1 ]; then
+                    chmod +x "${crnt_cfg}"
+                    print_log -g "[permission]" -b " :: " "Made ${cfg_chk} executable."
                 fi
             fi
 
