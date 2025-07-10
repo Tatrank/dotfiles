@@ -679,7 +679,7 @@ class HyprConfGUI(Window):
         system_grid.attach(hypr_header, 2, 0, 2, 1)
         row = 1
         self.lock_switch = None
-        if self.show_lock_checkbox:
+        if False:
             lock_label = Label(
                 label="Replace Hyprlock config", h_align="start", v_align="center"
             )
@@ -696,7 +696,7 @@ class HyprConfGUI(Window):
             system_grid.attach(lock_switch_container, 3, row, 1, 1)
             row += 1
         self.idle_switch = None
-        if self.show_idle_checkbox:
+        if False:
             idle_label = Label(
                 label="Replace Hypridle config", h_align="start", v_align="center"
             )
