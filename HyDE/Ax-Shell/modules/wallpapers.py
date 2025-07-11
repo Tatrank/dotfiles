@@ -229,7 +229,7 @@ class WallpaperSelector(Box):
         os.symlink(full_path, current_wall)
 
         if self.matugen_switcher.get_active():
-            exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme}')
+            exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme} && ~/.local/lib/hyde/color.set.sh "{full_path}"')
         else:
             exec_shell_command_async(
                 f'swww img "{full_path}" -t outer --transition-duration 1.5 --transition-step 255 --transition-fps 60 -f Nearest'
@@ -310,22 +310,7 @@ class WallpaperSelector(Box):
         file_name = model[path][1]
         full_path = os.path.join(data.WALLPAPERS_DIR, file_name)
 
-        # --- HyDE Integration ---
-        # This command sequence ensures HyDE's wallbash is set to 'auto' mode (1)
-        # and then applies the new wallpaper, which triggers the color update scripts.
-        hyde_lib_dir = os.path.expanduser("~/.local/lib/hyde")
-        set_conf_cmd = f"source {hyde_lib_dir}/globalcontrol.sh && set_conf enableWallDcol 1"
-        apply_wallpaper_cmd = f"{hyde_lib_dir}/wallpaper.sh --set '{full_path}' --global"
 
-        # Execute the commands
-        exec_shell_command_async(f"bash -c '{set_conf_cmd} && {apply_wallpaper_cmd}'")
-        
-        print(f"HyDE: Set wallbash to auto and applied wallpaper: {full_path}")
-        # --- End HyDE Integration ---
-
-        # The original logic can be removed or commented out if HyDE handles everything.
-        # If you want to keep it as a fallback, you can add a check for HyDE's existence.
-        #
         selected_scheme = self.scheme_dropdown.get_active_id()
         current_wall = os.path.expanduser(f"~/.current.wall")
         if os.path.isfile(current_wall) or os.path.islink(current_wall):
@@ -333,7 +318,8 @@ class WallpaperSelector(Box):
         os.symlink(full_path, current_wall)
         if self.matugen_switcher.get_active():
             # Matugen is enabled: run the normal command.
-            exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme}')
+            exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme} && ~/.local/lib/hyde/color.set.sh "{full_path}"')
+            
         else:
             # Matugen is disabled: run the alternative swww command.
             exec_shell_command_async(
