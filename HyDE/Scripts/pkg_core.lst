@@ -37,7 +37,8 @@ satty                                                  # Modern Screenshot Annot
 cliphist                                               # clipboard manager
 wl-clip-persist                                        # Keep Wayland clipboard even after programs close (avoids crashes)
 hyprsunset                                             # blue light filter
-python-fabric                                          # for axshell
+python-fabric                                          # for axshell¨
+uwsm
 
 # --------------------------------------------------- // Dependencies
 polkit-gnome                                           # authentication agent
