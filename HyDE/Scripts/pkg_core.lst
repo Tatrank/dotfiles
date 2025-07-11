@@ -22,7 +22,7 @@ sddm                                                   # display manager for KDE
 qt5-quickcontrols                                      # for sddm theme ui elements
 qt5-quickcontrols2                                     # for sddm theme ui elements
 qt5-graphicaleffects                                   # for sddm theme effects
-
+matugen-bin
 # --------------------------------------------------- // Window Manager
 hyprland                                               # wlroots-based wayland compositor
 rofi-wayland                                           # application launcher
