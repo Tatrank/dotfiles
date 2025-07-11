@@ -119,32 +119,28 @@ rgba_convert() {
 # Function to extract colors from matugen JSON output
 extract_matugen_colors() {
     local json_file="$1"
-    local color_type="$2"  # primary, secondary, tertiary, etc.
+    local color_scheme="$2"  # light or dark
+    local color_type="$3"    # primary, secondary, tertiary, etc.
     
     # Extract hex color without # prefix
-    jq -r ".colors.${color_type} // empty" "$json_file" | sed 's/^#//'
+    jq -r ".colors.${color_scheme}.${color_type} // empty" "$json_file" | sed 's/^#//'
 }
 
-# Function to get brightness using a simple calculation
+# Function to get brightness using Python instead of bc
 calc_brightness() {
     local hex_color="$1"
-    local r=$((16#${hex_color:0:2}))
-    local g=$((16#${hex_color:2:2}))
-    local b=$((16#${hex_color:4:2}))
-    # Using relative luminance formula
-    local brightness=$(echo "scale=3; ($r * 0.299 + $g * 0.587 + $b * 0.114) / 255" | bc -l)
-    # Return 0 if dark (< 0.5), 1 if light
-    if (( $(echo "$brightness < 0.5" | bc -l) )); then
-        return 0  # dark
-    else
-        return 1  # light
-    fi
+    local brightness=$(python3 -c "
+hex_color = '$hex_color'
+r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255
+print(1 if brightness >= 0.5 else 0)
+")
+    return $brightness  # Return 0 if dark, 1 if light
 }
 
 # Function to convert HSL to hex
 hsl_to_hex() {
     local h=$1 s=$2 l=$3
-    # Use a simple conversion - you might want to use a more robust method
     python3 -c "
 import colorsys
 h, s, l = $h/360.0, $s/100.0, $l/100.0
@@ -153,38 +149,67 @@ print('%02x%02x%02x' % (int(r*255), int(g*255), int(b*255)))
 "
 }
 
+# Function to validate hex color
+is_valid_hex() {
+    local color="$1"
+    if [[ "$color" =~ ^[0-9a-fA-F]{6}$ ]]; then
+        return 0  # valid
+    else
+        return 1  # invalid
+    fi
+}
+
 #// generate colors using matugen
 
 echo "Generating colors with matugen..."
 
-# Generate color palette using matugen
+# Generate color palette using matugen - determine which scheme to use
 if [ "${sortMode}" == "light" ]; then
-    matugen_scheme="--mode light"
+    color_scheme="light"
 else
-    matugen_scheme="--mode dark"
+    color_scheme="dark"
 fi
 
 # Generate matugen color palette and save to JSON
-matugen image "${wallbashImg}" ${matugen_scheme} --json hex > "${matugenCache}"
+# We don't pass --mode because matugen generates both light and dark schemes
+matugen image "${wallbashImg}" --json hex > "${matugenCache}"
 
 if [ $? -ne 0 ]; then
     echo "Error: Failed to generate colors with matugen"
     exit 1
 fi
 
-# Extract primary colors from matugen output
+# Check that the JSON has the expected structure
+if ! jq -e ".colors.${color_scheme}" "${matugenCache}" >/dev/null; then
+    echo "Error: Matugen didn't generate the expected JSON structure with ${color_scheme} scheme"
+    echo "JSON contents:"
+    jq -C . "${matugenCache}" | head -n 20
+    exit 1
+fi
+
+# Extract primary colors from matugen output with proper nesting
 readarray -t dcolHex < <(
-    jq -r '.colors | to_entries[] | select(.key | test("^(primary|secondary|tertiary|error)$")) | .value' "${matugenCache}" | \
-    sed 's/^#//' | head -n ${wallbashColors}
+    jq -r ".colors.${color_scheme} | to_entries[] | select(.key | test(\"^(primary|secondary|tertiary|error)$\")) | .value" "${matugenCache}" | \
+    sed 's/^#//' | grep -E '^[0-9a-fA-F]{6}$' | head -n ${wallbashColors}
 )
+
+echo "Extracted primary colors: ${dcolHex[*]}"
 
 # If we don't have enough colors, supplement with surface colors
 if [ ${#dcolHex[@]} -lt ${wallbashColors} ]; then
+    echo "Not enough primary colors, adding surface colors..."
     readarray -t surface_colors < <(
-        jq -r '.colors | to_entries[] | select(.key | test("surface")) | .value' "${matugenCache}" | \
-        sed 's/^#//' | head -n $((wallbashColors - ${#dcolHex[@]}))
+        jq -r ".colors.${color_scheme} | to_entries[] | select(.key | test(\"surface\")) | .value" "${matugenCache}" | \
+        sed 's/^#//' | grep -E '^[0-9a-fA-F]{6}$' | head -n $((wallbashColors - ${#dcolHex[@]}))
     )
     dcolHex+=("${surface_colors[@]}")
+    echo "Added surface colors: ${surface_colors[*]}"
+fi
+
+# Check if we have at least one valid color
+if [ ${#dcolHex[@]} -eq 0 ]; then
+    echo "Error: No valid colors found in matugen output"
+    exit 1
 fi
 
 #// auto-detect sort mode if not specified
@@ -196,6 +221,7 @@ if [ "${sortMode}" == "auto" ]; then
         sortMode="dark"
         colSort=""
     fi
+    echo "Auto-detected mode: ${sortMode}"
 fi
 
 echo "dcol_mode=\"${sortMode}\"" >>"${wallbashOut}"
@@ -205,6 +231,10 @@ if [ -n "${colSort}" ]; then
     # Sort by brightness for light mode
     mapfile -t sorted_colors < <(
         for color in "${dcolHex[@]}"; do
+            if ! is_valid_hex "$color"; then
+                echo "Warning: Skipping invalid color: $color" >&2
+                continue
+            fi
             brightness=$(python3 -c "
 r, g, b = int('$color'[0:2], 16), int('$color'[2:4], 16), int('$color'[4:6], 16)
 print(f'{(r * 0.299 + g * 0.587 + b * 0.114):.3f} $color')
@@ -213,18 +243,23 @@ print(f'{(r * 0.299 + g * 0.587 + b * 0.114):.3f} $color')
         done | sort -rn | awk '{print $2}'
     )
     dcolHex=("${sorted_colors[@]}")
+    echo "Sorted colors: ${dcolHex[*]}"
 fi
 
 #// Check if image is grayscale
-greyCheck=$(jq -r '.colors.primary' "${matugenCache}" | python3 -c "
+greyCheck=$(jq -r ".colors.${color_scheme}.primary" "${matugenCache}" | python3 -c "
 import sys
 color = input().replace('#', '')
-r, g, b = int(color[0:2], 16), int(color[2:4], 16), int(color[4:6], 16)
-max_diff = max(abs(r-g), abs(g-b), abs(r-b))
-print(1 if max_diff < 30 else 0)  # If color difference is small, it's grayscale
+try:
+    r, g, b = int(color[0:2], 16), int(color[2:4], 16), int(color[4:6], 16)
+    max_diff = max(abs(r-g), abs(g-b), abs(r-b))
+    print(1 if max_diff < 30 else 0)  # If color difference is small, it's grayscale
+except (ValueError, IndexError):
+    print(0)  # Default to not grayscale on error
 ")
 
 if [ "$greyCheck" == "1" ]; then
+    echo "Grayscale image detected, using mono profile"
     wallbashCurve="10 0\n17 0\n24 0\n39 0\n51 0\n58 0\n72 0\n84 0\n99 0"
 fi
 
@@ -233,20 +268,30 @@ fi
 for ((i = 0; i < wallbashColors; i++)); do
 
     #// generate missing primary colors
-    if [ -z "${dcolHex[i]}" ]; then
-        if calc_brightness "${dcolHex[i - 1]}"; then
-            modBri=$pryLightBri
-            modSat=$pryLightSat
-            modHue=$pryLightHue
+    if [ -z "${dcolHex[i]}" ] || ! is_valid_hex "${dcolHex[i]}"; then
+        if [ $i -eq 0 ]; then
+            # If the first color is missing, use a default
+            echo "Using default primary color"
+            if [ "$sortMode" == "light" ]; then
+                dcolHex[i]="f0f0f0"  # Light default
+            else
+                dcolHex[i]="202020"  # Dark default
+            fi
         else
-            modBri=$pryDarkBri
-            modSat=$pryDarkSat
-            modHue=$pryDarkHue
-        fi
+            # If not the first color, derive from previous
+            if calc_brightness "${dcolHex[i - 1]}"; then
+                modBri=$pryLightBri
+                modSat=$pryLightSat
+                modHue=$pryLightHue
+            else
+                modBri=$pryDarkBri
+                modSat=$pryDarkSat
+                modHue=$pryDarkHue
+            fi
 
-        echo -e "dcol_pry$((i + 1)) :: regen missing color"
-        # Use python to generate missing color with HSL modulation
-        dcolHex[i]=$(python3 -c "
+            echo -e "dcol_pry$((i + 1)) :: regen missing color"
+            # Use python to generate missing color with HSL modulation
+            dcolHex[i]=$(python3 -c "
 import colorsys
 prev_color = '${dcolHex[i - 1]}'
 r, g, b = int(prev_color[0:2], 16)/255.0, int(prev_color[2:4], 16)/255.0, int(prev_color[4:6], 16)/255.0
@@ -258,6 +303,7 @@ h = (h + ${modHue}/360.0) % 1.0
 r, g, b = colorsys.hls_to_rgb(h, l, s)
 print('%02x%02x%02x' % (int(r*255), int(g*255), int(b*255)))
 ")
+        fi
     fi
 
     echo "dcol_pry$((i + 1))=\"${dcolHex[i]}\"" >>"${wallbashOut}"
