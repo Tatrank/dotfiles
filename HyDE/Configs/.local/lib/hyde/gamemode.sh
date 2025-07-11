@@ -2,6 +2,18 @@
 # TODO: Add persistent mode
 HYPRGAMEMODE=$(hyprctl getoption animations:enabled | sed -n '1p' | awk '{print $2}')
 
+
+if pgrep -x "ax-shell" > /dev/null; then
+    # If it's running, kill it
+    killall ax-shell
+else
+    # If it's not running, start it
+    INSTALL_DIR="$HOME/.config/Ax-Shell"
+    uwsm app -- python "$INSTALL_DIR/main.py" > /dev/null 2>&1 & disown
+fi
+
+
+
 # Hyprland performance
 if [ "$HYPRGAMEMODE" = 1 ]; then
         hyprctl -q --batch "\

@@ -38,31 +38,12 @@ def open_config():
     """
     load_bind_vars()
 
-    show_lock_checkbox = True
-    dest_lock = os.path.expanduser("~/.config/hypr/hyprlock.conf")
-    src_lock = os.path.expanduser(f"~/.config/{APP_NAME_CAP}/config/hypr/hyprlock.conf")
-    if not os.path.exists(dest_lock) and os.path.exists(src_lock):
-        try:
-            os.makedirs(os.path.dirname(dest_lock), exist_ok=True)
-            shutil.copy(src_lock, dest_lock)
-            show_lock_checkbox = False 
-            print(f"Copied default hyprlock config to {dest_lock}")
-        except Exception as e:
-            print(f"Error copying default hyprlock config: {e}")
-            show_lock_checkbox = os.path.exists(src_lock)
+    show_lock_checkbox = False
 
-    show_idle_checkbox = True
-    dest_idle = os.path.expanduser("~/.config/hypr/hypridle.conf")
-    src_idle = os.path.expanduser(f"~/.config/{APP_NAME_CAP}/config/hypr/hypridle.conf")
-    if not os.path.exists(dest_idle) and os.path.exists(src_idle):
-        try:
-            os.makedirs(os.path.dirname(dest_idle), exist_ok=True)
-            shutil.copy(src_idle, dest_idle)
-            show_idle_checkbox = False
-            print(f"Copied default hypridle config to {dest_idle}")
-        except Exception as e:
-            print(f"Error copying default hypridle config: {e}")
-            show_idle_checkbox = os.path.exists(src_idle)
+
+    show_idle_checkbox = False
+
+ 
 
     app = Application(f"{APP_NAME}-settings")
     window = HyprConfGUI(
