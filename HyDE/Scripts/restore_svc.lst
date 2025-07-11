@@ -13,4 +13,4 @@
 NetworkManager|root|enable --now
 bluetooth|root|enable --now
 sddm|root|enable
-hyde-config|user|start|
+# hyde-config|user|start|
