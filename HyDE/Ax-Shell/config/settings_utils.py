@@ -243,9 +243,8 @@ def generate_hyprconf() -> str:
     is_vertical = bar_position in ["Left", "Right"]
     animation_type = "slidefadevert" if is_vertical else "slidefade"
 
-    return f"""exec-once = uwsm-app $(python {home}/.config/{APP_NAME_CAP}/main.py)
-exec = pgrep -x "hypridle" > /dev/null || uwsm app -- hypridle
-exec = uwsm app -- swww-daemon
+    return f"""
+#exec = uwsm app -- swww-daemon
 exec-once =  wl-paste --type text --watch cliphist store
 exec-once =  wl-paste --type image --watch cliphist store
 
@@ -279,8 +278,8 @@ layerrule = noanim, fabric
 exec = cp $wallpaper ~/.current.wall
 
 general {{
-    col.active_border = rgb($primary)
-    col.inactive_border = rgb($surface)
+  #  col.active_border = rgb($primary)
+  #  col.inactive_border = rgb($surface)
     gaps_in = 2
     gaps_out = 4
     border_size = 2
