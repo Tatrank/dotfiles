@@ -183,16 +183,16 @@ echo "Extracting semantic colors from matugen..."
 # Define mapping of matugen colors to dcol variables
 declare -A color_mapping=(
     # Primary colors (pry)
-    ["dcol_pry1"]="primary"
+    ["dcol_pry4"]="primary"
     ["dcol_pry2"]="secondary"
     ["dcol_pry3"]="tertiary"
-    ["dcol_pry4"]="surface"
+    ["dcol_pry1"]="surface"
     
     # Text colors (txt) - these should contrast with the primary colors
-    ["dcol_txt1"]="on_primary"
+    ["dcol_txt4"]="on_primary"
     ["dcol_txt2"]="on_secondary"
     ["dcol_txt3"]="on_tertiary"
-    ["dcol_txt4"]="on_surface"
+    ["dcol_txt1"]="on_surface"
     
     # Accent colors for primary (1)
     ["dcol_1xa1"]="primary_container"
