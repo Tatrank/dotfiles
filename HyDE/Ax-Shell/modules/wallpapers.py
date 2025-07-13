@@ -314,11 +314,12 @@ class WallpaperSelector(Box):
         # This command sequence ensures HyDE's wallbash is set to 'auto' mode (1)
         # and then applies the new wallpaper, which triggers the color update scripts.
         hyde_lib_dir = os.path.expanduser("~/.local/lib/hyde")
-        set_conf_cmd = f"source {hyde_lib_dir}/globalcontrol.sh && set_conf enableWallDcol 1"
+        
         apply_wallpaper_cmd = f"{hyde_lib_dir}/wallpaper.sh --set '{full_path}' --global"
+        color_set = f"{hyde_lib_dir}/color.set.sh '{full_path}'"
 
         # Execute the commands
-        exec_shell_command_async(f"bash -c '{set_conf_cmd} && {apply_wallpaper_cmd}'")
+        
         
         print(f"HyDE: Set wallbash to auto and applied wallpaper: {full_path}")
         # --- End HyDE Integration ---
@@ -334,11 +335,13 @@ class WallpaperSelector(Box):
         if self.matugen_switcher.get_active():
             # Matugen is enabled: run the normal command.
             exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme}')
+            exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
+            exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
+
         else:
             # Matugen is disabled: run the alternative swww command.
-            exec_shell_command_async(
-                f'swww img "{full_path}" -t outer --transition-duration 1.5 --transition-step 255 --transition-fps 60 -f Nearest'
-            )
+            exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
+            exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
 
     def on_scheme_changed(self, combo):
         selected_scheme = combo.get_active_id()
