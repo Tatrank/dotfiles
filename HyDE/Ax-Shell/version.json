@@ -1,7 +1,5 @@
 {
-	"version": "0.0.22",
+  "version": "0.0.24",
   "pkg_update": false,
-	"changelog": [
-    "<b>feat:</b> Customizable ignored notifications in history."
-	]
+  "changelog": ["<b>fix:</b> Audio Mixer max characters."]
 }

@@ -40,6 +40,8 @@ DEFAULTS = {
     "suffix_wallpapers": "COMMA",
     "prefix_randwall": "SUPER SHIFT",
     "suffix_randwall": "COMMA",
+    "prefix_mixer": "SUPER",
+    "suffix_mixer": "M",
     "prefix_emoji": "SUPER",
     "suffix_emoji": "PERIOD",
     "prefix_power": "SUPER",
@@ -96,6 +98,6 @@ DEFAULTS = {
         "disk": True,
         "gpu": True,
     },
-    "limited_apps_history": ["Spotify, HyDe", "Hyde"],
+    "limited_apps_history": ["Spotify", "HyDe", "Hyde"],
     "history_ignored_apps": ["Hyprshot"],
 }

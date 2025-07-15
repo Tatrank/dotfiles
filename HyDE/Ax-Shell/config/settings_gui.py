@@ -137,6 +137,7 @@ class HyprConfGUI(Window):
             ("Overview", "prefix_overview", "suffix_overview"),
             ("Wallpapers", "prefix_wallpapers", "suffix_wallpapers"),
             ("Random Wallpaper", "prefix_randwall", "suffix_randwall"),
+            ("Audio Mixer", "prefix_mixer", "suffix_mixer"),
             ("Emoji Picker", "prefix_emoji", "suffix_emoji"),
             ("Power Menu", "prefix_power", "suffix_power"),
             ("Toggle Caffeine", "prefix_caffeine", "suffix_caffeine"),
