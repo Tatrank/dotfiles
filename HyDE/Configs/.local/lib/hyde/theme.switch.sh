@@ -192,15 +192,7 @@ rm -rf "${confDir}/gtk-4.0"
 ln -s "${themesDir}/${gtk4Theme}/gtk-4.0" "${confDir}/gtk-4.0"
 
 
-# Apply GTK theme
-export GTK_THEME="Wallbash-Gtk"
-gsettings set org.gnome.desktop.interface gtk-theme "Wallbash-Gtk"
-gsettings set org.gnome.desktop.interface color-scheme "${dcol_mode:-dark}"
 
-# Ensure the theme directory exists
-if [ ! -d "$HOME/.local/share/themes/Wallbash-Gtk" ] && [ -x "$HOME/.local/bin/wallbash-setup-gtk-theme" ]; then
-    "$HOME/.local/bin/wallbash-setup-gtk-theme"
-fi
 
 
 #// flatpak GTK

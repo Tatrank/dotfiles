@@ -316,7 +316,7 @@ class WallpaperSelector(Box):
         hyde_lib_dir = os.path.expanduser("~/.local/lib/hyde")
         
         apply_wallpaper_cmd = f"{hyde_lib_dir}/wallpaper.sh --set '{full_path}' --global"
-        color_set = f"{hyde_lib_dir}/color.set.sh '{full_path}'"
+        color_set = f"{hyde_lib_dir}/color.set.sh"
 
         # Execute the commands
         
