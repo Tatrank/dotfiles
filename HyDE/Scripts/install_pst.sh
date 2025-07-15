@@ -64,7 +64,20 @@ fi
 
 # shell
 "${scrDir}/restore_shl.sh"
-
+# Setup and apply GTK theme
+if [ -x "$HOME/.local/bin/wallbash-setup-gtk-theme" ]; then
+    print_log -g "[GTKTHEME] " -b " :: " "Setting up Wallbash-Gtk theme"
+    [ ${flg_DryRun} -eq 1 ] || "$HOME/.local/bin/wallbash-setup-gtk-theme"
+    
+    # Set GTK theme environment variables
+    [ ${flg_DryRun} -eq 1 ] || {
+        export GTK_THEME="Wallbash-Gtk"
+        gsettings set org.gnome.desktop.interface gtk-theme "Wallbash-Gtk"
+        gsettings set org.gnome.desktop.interface color-scheme "${dcol_mode:-dark}"
+    }
+else
+    print_log -y "[GTKTHEME] " -b " :: " "wallbash-setup-gtk-theme not found or not executable"
+fi
 # flatpak
 if ! pkg_installed flatpak; then
     echo ""

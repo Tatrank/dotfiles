@@ -161,7 +161,6 @@ else
 fi
 
 # Generate matugen color palette and save to JSON
-# We don't pass --mode because matugen generates both light and dark schemes
 matugen image "${wallbashImg}" --json hex > "${matugenCache}"
 
 if [ $? -ne 0 ]; then
@@ -180,64 +179,67 @@ fi
 # Extract colors with semantic meaning directly from matugen
 echo "Extracting semantic colors from matugen..."
 
-# Define mapping of matugen colors to dcol variables
+# Write mode to output file
+echo "dcol_mode=\"${sortMode}\"" >> "${wallbashOut}"
+
 declare -A color_mapping=(
-    # Primary colors (pry)
-    ["dcol_pry4"]="primary"
-    ["dcol_pry2"]="secondary"
-    ["dcol_pry3"]="tertiary"
-    ["dcol_pry1"]="surface"
+    # Primary colors (pry) - Use surface colors for backgrounds, primary/secondary for accents
+    ["dcol_pry1"]=""                 
+    ["dcol_pry2"]=""         
+    ["dcol_pry3"]=""                    
+    ["dcol_pry4"]=""                  
     
-    # Text colors (txt) - these should contrast with the primary colors
-    ["dcol_txt4"]="on_primary"
-    ["dcol_txt2"]="on_secondary"
-    ["dcol_txt3"]="on_tertiary"
-    ["dcol_txt1"]="on_surface"
+    # Text colors (txt) - Use corresponding on_* colors for guaranteed contrast
+    ["dcol_txt1"]=""
+    ["dcol_txt2"]=""
+    ["dcol_txt3"]=""
+    ["dcol_txt4"]=""
     
-    # Accent colors for primary (1)
-    ["dcol_1xa1"]="primary_container"
-    ["dcol_1xa2"]="primary_fixed"
-    ["dcol_1xa3"]="primary_fixed_dim"
-    ["dcol_1xa4"]="inverse_primary"
-    ["dcol_1xa5"]="surface_tint"
-    ["dcol_1xa6"]="blue"
-    ["dcol_1xa7"]="blue_container"
-    ["dcol_1xa8"]="on_blue"
-    ["dcol_1xa9"]="on_blue_container"
+    # Accent colors for surface/background (group 1)
+    ["dcol_1xa1"]=""
+    ["dcol_1xa2"]=""
+    ["dcol_1xa3"]=""
+    ["dcol_1xa4"]=""
+    ["dcol_1xa5"]=""
+    ["dcol_1xa6"]=""
+    ["dcol_1xa7"]=""
+    ["dcol_1xa8"]=""
+    ["dcol_1xa9"]=""
     
-    # Accent colors for secondary (2)
-    ["dcol_2xa1"]="secondary_container"
-    ["dcol_2xa2"]="secondary_fixed"
-    ["dcol_2xa3"]="secondary_fixed_dim"
-    ["dcol_2xa4"]="green"
-    ["dcol_2xa5"]="green_container"
-    ["dcol_2xa6"]="on_green"
-    ["dcol_2xa7"]="on_green_container"
-    ["dcol_2xa8"]="cyan"
-    ["dcol_2xa9"]="cyan_container"
+    # Accent colors for containers (group 2)
+    ["dcol_2xa1"]=""
+    ["dcol_2xa2"]=""
+    ["dcol_2xa3"]=""
+    ["dcol_2xa4"]=""
+    ["dcol_2xa5"]=""
+    ["dcol_2xa6"]=""
+    ["dcol_2xa7"]=""
+    ["dcol_2xa8"]=""
+    ["dcol_2xa9"]=""
     
-    # Accent colors for tertiary (3)
-    ["dcol_3xa1"]="tertiary_container"
-    ["dcol_3xa2"]="tertiary_fixed"
-    ["dcol_3xa3"]="tertiary_fixed_dim"
-    ["dcol_3xa4"]="magenta"
-    ["dcol_3xa5"]="magenta_container"
-    ["dcol_3xa6"]="on_magenta"
-    ["dcol_3xa7"]="on_magenta_container"
-    ["dcol_3xa8"]="yellow"
-    ["dcol_3xa9"]="yellow_container"
+    # Accent colors for primary accent (group 3)
+    ["dcol_3xa1"]=""
+    ["dcol_3xa2"]=""
+    ["dcol_3xa3"]=""
+    ["dcol_3xa4"]=""
+    ["dcol_3xa5"]=""
+    ["dcol_3xa6"]=""
+    ["dcol_3xa7"]=""
+    ["dcol_3xa8"]=""
+    ["dcol_3xa9"]=""
     
-    # Accent colors for surface (4)
-    ["dcol_4xa1"]="surface_container"
-    ["dcol_4xa2"]="surface_bright"
-    ["dcol_4xa3"]="surface_dim"
-    ["dcol_4xa4"]="surface_variant"
-    ["dcol_4xa5"]="on_surface_variant"
-    ["dcol_4xa6"]="outline"
-    ["dcol_4xa7"]="outline_variant"
-    ["dcol_4xa8"]="red"
-    ["dcol_4xa9"]="error"
+    # Accent colors for secondary accent (group 4)
+    ["dcol_4xa1"]=""
+    ["dcol_4xa2"]=""
+    ["dcol_4xa3"]=""
+    ["dcol_4xa4"]=""
+    ["dcol_4xa5"]=""
+    ["dcol_4xa6"]=""
+    ["dcol_4xa7"]=""
+    ["dcol_4xa8"]=""
+    ["dcol_4xa9"]=""
 )
+
 
 # Create an empty dcol array to store extracted colors
 declare -A dcol=()
@@ -259,20 +261,20 @@ for i in {1..4}; do
     pry_var="dcol_pry$i"
     txt_var="dcol_txt$i"
     
-    # If primary color is missing, try fallbacks
+    # If primary color is missing, try fallbacks based on your mapping
     if [ -z "${dcol[$pry_var]}" ]; then
         case $i in
-            1) # Primary fallbacks
-                fallbacks=("surface_bright" "background" "surface")
+            1) # surface fallbacks
+                fallbacks=("surface" "background" "surface_container")
                 ;;
-            2) # Secondary fallbacks
-                fallbacks=("blue" "primary_container" "primary_fixed")
+            2) # secondary fallbacks
+                fallbacks=("secondary" "blue" "cyan")
                 ;;
-            3) # Tertiary fallbacks
-                fallbacks=("magenta" "tertiary_container" "tertiary_fixed")
+            3) # tertiary fallbacks
+                fallbacks=("tertiary" "magenta" "yellow")
                 ;;
-            4) # Surface fallbacks
-                fallbacks=("surface_variant" "outline" "surface_container")
+            4) # primary fallbacks
+                fallbacks=("primary" "surface_tint" "primary_container")
                 ;;
         esac
         
@@ -286,31 +288,32 @@ for i in {1..4}; do
             fi
         done
         
-        # If still missing, use defaults
+        # If still missing, use smart defaults
         if [ -z "${dcol[$pry_var]}" ]; then
-            if [ "$sortMode" == "light" ]; then
-                dcol[$pry_var]="f0f0f0"  # Light default
-            else
-                dcol[$pry_var]="202020"  # Dark default
-            fi
+            case $i in
+                1) dcol[$pry_var]="202020" ;;  # Dark surface
+                2) dcol[$pry_var]="4a9eff" ;;  # Blue secondary
+                3) dcol[$pry_var]="ff6b9d" ;;  # Pink tertiary
+                4) dcol[$pry_var]="6c5ce7" ;;  # Purple primary
+            esac
             echo "Using default color for $pry_var: ${dcol[$pry_var]}"
         fi
     fi
     
-    # If text color is missing, try fallbacks
+    # If text color is missing, try fallbacks based on your mapping
     if [ -z "${dcol[$txt_var]}" ]; then
         case $i in
-            1) # On Primary fallbacks
-                fallbacks=("on_primary_container" "on_background" "on_surface")
+            1) # on_surface fallbacks
+                fallbacks=("on_surface" "on_background" "foreground")
                 ;;
-            2) # On Secondary fallbacks
-                fallbacks=("on_secondary_container" "on_blue" "on_primary")
+            2) # on_secondary fallbacks
+                fallbacks=("on_secondary" "on_blue" "on_cyan")
                 ;;
-            3) # On Tertiary fallbacks
-                fallbacks=("on_tertiary_container" "on_magenta" "on_primary")
+            3) # on_tertiary fallbacks
+                fallbacks=("on_tertiary" "on_magenta" "on_yellow")
                 ;;
-            4) # On Surface fallbacks
-                fallbacks=("on_surface_variant" "foreground" "on_background")
+            4) # on_primary fallbacks
+                fallbacks=("on_primary" "on_primary_container" "on_surface")
                 ;;
         esac
         
@@ -354,15 +357,17 @@ print('%02x%02x%02x' % (int(r*255), int(g*255), int(b*255)))
     echo "${txt_var}=\"${dcol[$txt_var]}\"" >> "${wallbashOut}"
     echo "${txt_var}_rgba=\"$(rgba_convert "${dcol[$txt_var]}")\"" >> "${wallbashOut}"
     
-    # Handle accent colors
+    # Handle accent colors - generate them based on the primary color for this group
     for j in {1..9}; do
         xa_var="dcol_${i}xa${j}"
         if [ -z "${dcol[$xa_var]}" ]; then
-            # If accent color is missing, generate a reasonable fallback
-            # based on the primary color for this group
+            # Generate accent color based on the primary color for this group
+            base_color="${dcol[$pry_var]}"
+            
+            # Extract hue from base color
             xHue=$(python3 -c "
 import colorsys
-color = '${dcol[$pry_var]}'
+color = '$base_color'
 r, g, b = int(color[0:2], 16)/255.0, int(color[2:4], 16)/255.0, int(color[4:6], 16)/255.0
 h, l, s = colorsys.rgb_to_hls(r, g, b)
 print(int(h * 360))
@@ -374,7 +379,7 @@ print(int(h * 360))
                 read -r xBri xSat <<< "${curve_values[j-1]}"
                 acol=$(hsl_to_hex "${xHue}" "${xSat}" "${xBri}")
                 dcol[$xa_var]=$acol
-                echo "Generated accent color for $xa_var: $acol"
+                echo "Generated accent color for $xa_var: $acol (based on ${pry_var})"
             else
                 # Default if we run out of curve values
                 dcol[$xa_var]=${dcol[$pry_var]}

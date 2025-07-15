@@ -296,6 +296,18 @@ revert_colors=0
 [ "${enableWallDcol}" -eq 0 ] && { grep -q "${dcol_mode}" <<<"$(get_hyprConf "COLOR_SCHEME")" || revert_colors=1; }
 export revert_colors
 
+# Add these lines after the existing configuration hooks
+
+# Update GTK theme
+if command -v gsettings >/dev/null; then
+    gsettings set org.gnome.desktop.interface gtk-theme "Default"
+    sleep 0.5
+    gsettings set org.gnome.desktop.interface gtk-theme "Wallbash-Gtk"
+    gsettings set org.gnome.desktop.interface color-scheme "${dcol_mode}"
+fi
+
+
+
 # Process "always" templates in parallel
 find "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | sort | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} || true
 

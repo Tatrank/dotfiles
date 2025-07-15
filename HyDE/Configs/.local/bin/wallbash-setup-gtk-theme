@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Use system environment variables
+source "${HOME}/.local/lib/hyde/globalcontrol.sh" 2>/dev/null
+
+# Create base theme directories
+mkdir -p "${themesDir}/Wallbash-Gtk/gtk-3.0"
+mkdir -p "${themesDir}/Wallbash-Gtk/gtk-4.0"
+mkdir -p "${themesDir}/Wallbash-Gtk/gtk-2.0"
+mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0"
+mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0"
+
+# Create theme metadata
+cat > "${themesDir}/Wallbash-Gtk/index.theme" << 'EOL'
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Wallbash-Gtk
+Comment=Dynamic Wallpaper-based GTK Theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=Wallbash-Gtk
+MetacityTheme=Wallbash-Gtk
+IconTheme=Tela-circle
+CursorTheme=Bibata-Modern-Ice
+ButtonLayout=close,minimize,maximize:menu
+EOL
+
+# Create base theme files that import the generated colors
+cat > "${themesDir}/Wallbash-Gtk/gtk-3.0/gtk.css" << 'EOL'
+@import url("${XDG_CONFIG_HOME}/gtk-3.0/gtk.css");
+
+/* Base theme styles */
+* {
+    -gtk-icon-shadow: none;
+    -gtk-outline-shadow: none;
+    text-shadow: none;
+    -gtk-outline-radius: 0px;
+}
+EOL
+
+cat > "${themesDir}/Wallbash-Gtk/gtk-4.0/gtk.css" << 'EOL'
+@import url("${XDG_CONFIG_HOME}/gtk-4.0/gtk.css");
+
+/* Base theme styles */
+* {
+    -gtk-icon-shadow: none;
+    -gtk-outline-shadow: none;
+    text-shadow: none;
+    -gtk-outline-radius: 0px;
+}
+EOL
+
+# Create dark versions too
+cp "${themesDir}/Wallbash-Gtk/gtk-3.0/gtk.css" "${themesDir}/Wallbash-Gtk/gtk-3.0/gtk-dark.css"
+cp "${themesDir}/Wallbash-Gtk/gtk-4.0/gtk.css" "${themesDir}/Wallbash-Gtk/gtk-4.0/gtk-dark.css"
+
+# Set GTK theme
+gsettings set org.gnome.desktop.interface gtk-theme "Wallbash-Gtk"
+gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+export GTK_THEME="Wallbash-Gtk"
+
+echo "Wallbash-Gtk theme installed successfully!"
