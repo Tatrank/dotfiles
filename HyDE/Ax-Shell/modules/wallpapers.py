@@ -249,6 +249,12 @@ class WallpaperSelector(Box):
 
     def on_directory_changed(self, monitor, file, other_file, event_type):
         file_name = file.get_basename()
+        file_path = file.get_path()
+        
+        # Skip processing for symlink operations in ~/.current.wall
+        if "/.current.wall" in file_path:
+            return
+        
         if event_type == Gio.FileMonitorEvent.DELETED:
             if file_name in self.files:
                 self.files.remove(file_name)
@@ -261,7 +267,8 @@ class WallpaperSelector(Box):
                 self.thumbnails = [(p, n) for p, n in self.thumbnails if n != file_name]
                 GLib.idle_add(self.arrange_viewport, self.search_entry.get_text())
         elif event_type == Gio.FileMonitorEvent.CREATED:
-            if self._is_image(file_name):
+            # Only process actual wallpaper files in the wallpaper directory
+            if self._is_image(file_name) and os.path.dirname(file_path) == data.WALLPAPERS_DIR:
                 # Convert filename to lowercase and replace spaces with "-"
                 new_name = file_name.lower().replace(" ", "-")
                 full_path = os.path.join(data.WALLPAPERS_DIR, file_name)
