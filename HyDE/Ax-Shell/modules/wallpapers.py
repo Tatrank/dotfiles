@@ -336,12 +336,14 @@ class WallpaperSelector(Box):
             # Matugen is enabled: run the normal command.
             exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme}')
             exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
-            exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
+            exec_shell_command_async(f"bash -c '{color_set}'")
+           
 
         else:
             # Matugen is disabled: run the alternative swww command.
             exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
-            exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
+            exec_shell_command_async(f"bash -c '{color_set}'")
+           
 
     def on_scheme_changed(self, combo):
         selected_scheme = combo.get_active_id()
