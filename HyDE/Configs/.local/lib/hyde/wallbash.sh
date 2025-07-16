@@ -169,12 +169,12 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check that the JSON has the expected structure
-if ! jq -e ".colors.${color_scheme}" "${matugenCache}" >/dev/null; then
-    echo "Error: Matugen didn't generate the expected JSON structure with ${color_scheme} scheme"
-    echo "JSON contents:"
-    jq -C . "${matugenCache}" | head -n 20
-    exit 1
-fi
+#if ! jq -e ".colors.${color_scheme}" "${matugenCache}" >/dev/null; then
+#    echo "Error: Matugen didn't generate the expected JSON structure with ${color_scheme} scheme"
+#    echo "JSON contents:"
+#    jq -C . "${matugenCache}" | head -n 20
+#    exit 1
+#fi
 
 # Extract colors with semantic meaning directly from matugen
 echo "Extracting semantic colors from matugen..."
