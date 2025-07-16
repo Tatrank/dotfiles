@@ -9,7 +9,7 @@ ${cacheDir}/wallbash/gtk.css
 /* primary color 1 */
 @define-color wallbash_pry1 #<wallbash_pry1>;
 /* text color 1 */
-@define-color wallbash_txt1 #<wallbash_txt2>;
+@define-color wallbash_txt2 #<wallbash_txt2>;
 /* accent color 1 for primary color 1 */
 @define-color wallbash_1xa1 #<wallbash_1xa1>;
 /* accent color 2 for primary color 1 */
@@ -34,7 +34,7 @@ ${cacheDir}/wallbash/gtk.css
 /* primary color 1 */
 @define-color wallbash_pry1_rgba <wallbash_pry1_rgba(0.95)>;
 /* text color 1 */
-@define-color wallbash_txt1_rgba <wallbash_txt2_rgba(0.95)>;
+@define-color wallbash_txt2_rgba <wallbash_txt2_rgba(0.95)>;
 /* accent color 1 for primary color 1 */
 @define-color wallbash_1xa1_rgba <wallbash_1xa1_rgba(0.95)>;
 /* accent color 2 for primary color 1 */
