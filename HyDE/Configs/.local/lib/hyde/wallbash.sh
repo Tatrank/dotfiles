@@ -168,78 +168,70 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Check that the JSON has the expected structure
-#if ! jq -e ".colors.${color_scheme}" "${matugenCache}" >/dev/null; then
-#    echo "Error: Matugen didn't generate the expected JSON structure with ${color_scheme} scheme"
-#    echo "JSON contents:"
-#    jq -C . "${matugenCache}" | head -n 20
-#    exit 1
-#fi
-
 # Extract colors with semantic meaning directly from matugen
 echo "Extracting semantic colors from matugen..."
 
 # Write mode to output file
 echo "dcol_mode=\"${sortMode}\"" >> "${wallbashOut}"
 
+# Updated color mapping for vibrant colors by default with dark background enforcement
 declare -A color_mapping=(
-    # Primary colors (pry) - Use surface colors for backgrounds, primary/secondary for accents
-    ["dcol_pry1"]="surface"                 
-    ["dcol_pry2"]="secondary"         
-    ["dcol_pry3"]="tertiary"                    
-    ["dcol_pry4"]="primary"                  
+    # Primary colors (pry) - Force dark surface, use vibrant accents
+    ["dcol_pry1"]="surface_dim"             # Darker surface for background
+    ["dcol_pry2"]="primary"                 # Vibrant primary
+    ["dcol_pry3"]="secondary"               # Vibrant secondary
+    ["dcol_pry4"]="tertiary"                # Vibrant tertiary
     
     # Text colors (txt) - Use corresponding on_* colors for guaranteed contrast
     ["dcol_txt1"]="on_surface"
-    ["dcol_txt2"]="on_secondary"
-    ["dcol_txt3"]="on_tertiary"
-    ["dcol_txt4"]="on_primary"
+    ["dcol_txt2"]="on_primary"
+    ["dcol_txt3"]="on_secondary"
+    ["dcol_txt4"]="on_tertiary"
     
-    # Accent colors for surface/background (group 1)
-    ["dcol_1xa1"]="surface_bright"
+    # Accent colors group 1 - Mix of surface and vibrant colors
+    ["dcol_1xa1"]="surface_container_low"
     ["dcol_1xa2"]="surface_container"
-    ["dcol_1xa3"]="surface_container_low"
-    ["dcol_1xa4"]="surface_container_high"
-    ["dcol_1xa5"]="surface_variant"
-    ["dcol_1xa6"]="surface_container_highest"
-    ["dcol_1xa7"]="outline_variant"
-    ["dcol_1xa8"]="outline"
-    ["dcol_1xa9"]="inverse_surface"
+    ["dcol_1xa3"]="surface_variant"
+    ["dcol_1xa4"]="outline_variant"
+    ["dcol_1xa5"]="outline"
+    ["dcol_1xa6"]="primary"
+    ["dcol_1xa7"]="secondary"
+    ["dcol_1xa8"]="tertiary"
+    ["dcol_1xa9"]="error"
     
-    # Accent colors for containers (group 2)
-    ["dcol_2xa1"]="secondary_container"
-    ["dcol_2xa2"]="blue"
-    ["dcol_2xa3"]="blue_container"
-    ["dcol_2xa4"]="cyan"
-    ["dcol_2xa5"]="cyan_container"
-    ["dcol_2xa6"]="secondary_fixed"
-    ["dcol_2xa7"]="secondary_fixed_dim"
-    ["dcol_2xa8"]="on_secondary_container"
-    ["dcol_2xa9"]="on_blue_container"
+    # Accent colors group 2 - Vibrant colors from matugen
+    ["dcol_2xa1"]="red"
+    ["dcol_2xa2"]="green"
+    ["dcol_2xa3"]="blue"
+    ["dcol_2xa4"]="yellow"
+    ["dcol_2xa5"]="cyan"
+    ["dcol_2xa6"]="magenta"
+    ["dcol_2xa7"]="primary"
+    ["dcol_2xa8"]="secondary"
+    ["dcol_2xa9"]="tertiary"
     
-    # Accent colors for primary accent (group 3)
-    ["dcol_3xa1"]="tertiary_container"
-    ["dcol_3xa2"]="magenta"
-    ["dcol_3xa3"]="magenta_container"
-    ["dcol_3xa4"]="yellow"
-    ["dcol_3xa5"]="yellow_container"
-    ["dcol_3xa6"]="tertiary_fixed"
-    ["dcol_3xa7"]="tertiary_fixed_dim"
-    ["dcol_3xa8"]="on_tertiary_container"
-    ["dcol_3xa9"]="on_magenta_container"
+    # Accent colors group 3 - More vibrant colors
+    ["dcol_3xa1"]="yellow"
+    ["dcol_3xa2"]="red"
+    ["dcol_3xa3"]="green"
+    ["dcol_3xa4"]="blue"
+    ["dcol_3xa5"]="cyan"
+    ["dcol_3xa6"]="magenta"
+    ["dcol_3xa7"]="primary"
+    ["dcol_3xa8"]="secondary"
+    ["dcol_3xa9"]="tertiary"
     
-    # Accent colors for secondary accent (group 4)
-    ["dcol_4xa1"]="primary_container"
-    ["dcol_4xa2"]="green"
-    ["dcol_4xa3"]="green_container"
-    ["dcol_4xa4"]="red" 
-    ["dcol_4xa5"]="red_container"
-    ["dcol_4xa6"]="primary_fixed"
-    ["dcol_4xa7"]="primary_fixed_dim"
-    ["dcol_4xa8"]="on_primary_container"
-    ["dcol_4xa9"]="on_green_container"
+    # Accent colors group 4 - Even more vibrant combinations
+    ["dcol_4xa1"]="green"
+    ["dcol_4xa2"]="blue"
+    ["dcol_4xa3"]="cyan"
+    ["dcol_4xa4"]="magenta"
+    ["dcol_4xa5"]="yellow"
+    ["dcol_4xa6"]="red"
+    ["dcol_4xa7"]="primary"
+    ["dcol_4xa8"]="secondary"
+    ["dcol_4xa9"]="tertiary"
 )
-
 
 # Create an empty dcol array to store extracted colors
 declare -A dcol=()
@@ -256,6 +248,48 @@ for var_name in "${!color_mapping[@]}"; do
     fi
 done
 
+# Force dark background always for dcol_pry1
+if [ -n "${dcol[dcol_pry1]}" ]; then
+    original_bg="${dcol[dcol_pry1]}"
+    forced_dark_bg=$(python3 -c "
+import colorsys
+color = '$original_bg'
+r, g, b = int(color[0:2], 16)/255.0, int(color[2:4], 16)/255.0, int(color[4:6], 16)/255.0
+h, l, s = colorsys.rgb_to_hls(r, g, b)
+# Keep hue and saturation but force very dark lightness
+l = 0.08  # Very dark (8% lightness)
+s = max(0.1, s * 0.5)  # Reduce saturation slightly for better readability
+r, g, b = colorsys.hls_to_rgb(h, l, s)
+print('%02x%02x%02x' % (int(r*255), int(g*255), int(b*255)))
+    ")
+    dcol[dcol_pry1]=$forced_dark_bg
+    echo "Forced dark background: $forced_dark_bg"
+fi
+
+# Boost saturation of accent colors for more vibrant terminals
+for i in {2..4}; do
+    for j in {1..9}; do
+        xa_var="dcol_${i}xa${j}"
+        if [ -n "${dcol[$xa_var]}" ]; then
+            vibrant_color=$(python3 -c "
+import colorsys
+color = '${dcol[$xa_var]}'
+r, g, b = int(color[0:2], 16)/255.0, int(color[2:4], 16)/255.0, int(color[4:6], 16)/255.0
+h, l, s = colorsys.rgb_to_hls(r, g, b)
+# Boost saturation for more vibrant colors
+s = min(1.0, s * 1.4)  # Increase saturation by 40%
+# Adjust lightness based on color scheme
+if l < 0.3:  # For dark colors, brighten them a bit
+    l = min(0.7, l * 1.3)
+r, g, b = colorsys.hls_to_rgb(h, l, s)
+print('%02x%02x%02x' % (int(r*255), int(g*255), int(b*255)))
+            ")
+            dcol[$xa_var]=$vibrant_color
+            echo "Enhanced vibrant color for $xa_var: $vibrant_color"
+        fi
+    done
+done
+
 # Handle cases where primary colors are missing by using appropriate fallbacks
 for i in {1..4}; do
     pry_var="dcol_pry$i"
@@ -264,17 +298,17 @@ for i in {1..4}; do
     # If primary color is missing, try fallbacks based on your mapping
     if [ -z "${dcol[$pry_var]}" ]; then
         case $i in
-            1) # surface fallbacks
-                fallbacks=("surface" "background" "surface_container")
+            1) # surface fallbacks - ensure dark
+                fallbacks=("surface_dim" "surface_container_low" "background")
                 ;;
-            2) # secondary fallbacks
-                fallbacks=("secondary" "blue" "cyan")
+            2) # primary fallbacks
+                fallbacks=("primary" "blue" "cyan")
                 ;;
-            3) # tertiary fallbacks
-                fallbacks=("tertiary" "magenta" "yellow")
+            3) # secondary fallbacks
+                fallbacks=("secondary" "magenta" "yellow")
                 ;;
-            4) # primary fallbacks
-                fallbacks=("primary" "surface_tint" "primary_container")
+            4) # tertiary fallbacks
+                fallbacks=("tertiary" "green" "red")
                 ;;
         esac
         
@@ -284,6 +318,22 @@ for i in {1..4}; do
             if [[ -n "$color_value" && "$color_value" =~ ^[0-9a-fA-F]{6}$ ]]; then
                 dcol[$pry_var]=$color_value
                 echo "Using fallback for $pry_var: $color_value (from ${fallback})"
+                
+                # Force dark background for pry1 even with fallback
+                if [ "$i" -eq 1 ]; then
+                    forced_dark_bg=$(python3 -c "
+import colorsys
+color = '$color_value'
+r, g, b = int(color[0:2], 16)/255.0, int(color[2:4], 16)/255.0, int(color[4:6], 16)/255.0
+h, l, s = colorsys.rgb_to_hls(r, g, b)
+l = 0.08  # Very dark
+s = max(0.1, s * 0.5)
+r, g, b = colorsys.hls_to_rgb(h, l, s)
+print('%02x%02x%02x' % (int(r*255), int(g*255), int(b*255)))
+                    ")
+                    dcol[$pry_var]=$forced_dark_bg
+                    echo "Forced dark fallback background: $forced_dark_bg"
+                fi
                 break
             fi
         done
@@ -291,10 +341,10 @@ for i in {1..4}; do
         # If still missing, use smart defaults
         if [ -z "${dcol[$pry_var]}" ]; then
             case $i in
-                1) dcol[$pry_var]="202020" ;;  # Dark surface
-                2) dcol[$pry_var]="4a9eff" ;;  # Blue secondary
-                3) dcol[$pry_var]="ff6b9d" ;;  # Pink tertiary
-                4) dcol[$pry_var]="6c5ce7" ;;  # Purple primary
+                1) dcol[$pry_var]="141414" ;;  # Very dark surface
+                2) dcol[$pry_var]="4a9eff" ;;  # Blue primary
+                3) dcol[$pry_var]="ff6b9d" ;;  # Pink secondary
+                4) dcol[$pry_var]="6c5ce7" ;;  # Purple tertiary
             esac
             echo "Using default color for $pry_var: ${dcol[$pry_var]}"
         fi
@@ -306,14 +356,14 @@ for i in {1..4}; do
             1) # on_surface fallbacks
                 fallbacks=("on_surface" "on_background" "foreground")
                 ;;
-            2) # on_secondary fallbacks
-                fallbacks=("on_secondary" "on_blue" "on_cyan")
-                ;;
-            3) # on_tertiary fallbacks
-                fallbacks=("on_tertiary" "on_magenta" "on_yellow")
-                ;;
-            4) # on_primary fallbacks
+            2) # on_primary fallbacks
                 fallbacks=("on_primary" "on_primary_container" "on_surface")
+                ;;
+            3) # on_secondary fallbacks
+                fallbacks=("on_secondary" "on_secondary_container" "on_surface")
+                ;;
+            4) # on_tertiary fallbacks
+                fallbacks=("on_tertiary" "on_tertiary_container" "on_surface")
                 ;;
         esac
         
