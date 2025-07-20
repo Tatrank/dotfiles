@@ -334,7 +334,7 @@ class WallpaperSelector(Box):
         # --- HyDE Integration ---
         hyde_lib_dir = os.path.expanduser("~/.local/lib/hyde")
         apply_wallpaper_cmd = f"{hyde_lib_dir}/wallpaper.sh --set '{full_path}' --global"
-        color_set = f"{hyde_lib_dir}/color.set.sh"
+        color_set = f"{hyde_lib_dir}/color.set.sh {full_path}"
         
         # Temporarily pause file monitor to prevent duplicate processing
         if hasattr(self, 'file_monitor'):
@@ -367,22 +367,7 @@ class WallpaperSelector(Box):
         # The original logic can be removed or commented out if HyDE handles everything.
         # If you want to keep it as a fallback, you can add a check for HyDE's existence.
         #
-        selected_scheme = self.scheme_dropdown.get_active_id()
-        current_wall = os.path.expanduser(f"~/.current.wall")
-        if os.path.isfile(current_wall) or os.path.islink(current_wall):
-            os.remove(current_wall)
-        os.symlink(full_path, current_wall)
-        if self.matugen_switcher.get_active():
-            # Matugen is enabled: run the normal command.
-            exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme}')
-            exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
-            exec_shell_command_async(f"bash -c '{color_set}'")
-           
-
-        else:
-            # Matugen is disabled: run the alternative swww command.
-            exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
-            exec_shell_command_async(f"bash -c '{color_set}'")
+ 
            
 
     def on_scheme_changed(self, combo):
