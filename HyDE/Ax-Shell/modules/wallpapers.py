@@ -248,13 +248,19 @@ class WallpaperSelector(Box):
         self.file_monitor.connect("changed", self.on_directory_changed)
 
     def on_directory_changed(self, monitor, file, other_file, event_type):
+        # Get file information
         file_name = file.get_basename()
         file_path = file.get_path()
         
-        # Skip processing for symlink operations in ~/.current.wall
-        if "/.current.wall" in file_path:
+        # Skip processing for all symlink operations
+        if "/.current.wall" in file_path or os.path.islink(file_path):
             return
         
+        # Skip temporary files often created during file operations
+        if file_name.startswith('.') or '~' in file_name:
+            return
+            
+        # Handle events
         if event_type == Gio.FileMonitorEvent.DELETED:
             if file_name in self.files:
                 self.files.remove(file_name)
@@ -264,25 +270,33 @@ class WallpaperSelector(Box):
                         os.remove(cache_path)
                     except Exception as e:
                         print(f"Error deleting cache {cache_path}: {e}")
-                self.thumbnails = [(p, n) for p, n in self.thumbnails if n != file_name]
-                GLib.idle_add(self.arrange_viewport, self.search_entry.get_text())
+            # Remove from thumbnails list
+            self.thumbnails = [(p, n) for p, n in self.thumbnails if n != file_name]
+            # Update UI in main thread
+            GLib.idle_add(self.arrange_viewport, self.search_entry.get_text())
+            
         elif event_type == Gio.FileMonitorEvent.CREATED:
-            # Only process actual wallpaper files in the wallpaper directory
-            if self._is_image(file_name) and os.path.dirname(file_path) == data.WALLPAPERS_DIR:
-                # Convert filename to lowercase and replace spaces with "-"
+            # Only process actual wallpaper files in the correct directory
+            if (self._is_image(file_name) and 
+                    os.path.dirname(file_path) == data.WALLPAPERS_DIR and
+                    file_name not in self.files):
+                
+                # Convert filename to lowercase and replace spaces
                 new_name = file_name.lower().replace(" ", "-")
-                full_path = os.path.join(data.WALLPAPERS_DIR, file_name)
-                new_full_path = os.path.join(data.WALLPAPERS_DIR, new_name)
                 if new_name != file_name:
                     try:
+                        full_path = os.path.join(data.WALLPAPERS_DIR, file_name)
+                        new_full_path = os.path.join(data.WALLPAPERS_DIR, new_name)
                         os.rename(full_path, new_full_path)
                         file_name = new_name
-                        print(f"Renamed file '{full_path}' to '{new_full_path}')")
                     except Exception as e:
-                        print(f"Error renaming file {full_path}: {e}")
+                        print(f"Error renaming file: {e}")
+                        
+                # Add to files list if not already there
                 if file_name not in self.files:
                     self.files.append(file_name)
                     self.files.sort()
+                    # Process the new file in background
                     self.executor.submit(self._process_file, file_name)
         elif event_type == Gio.FileMonitorEvent.CHANGED:
             if self._is_image(file_name) and file_name in self.files:
@@ -318,17 +332,36 @@ class WallpaperSelector(Box):
         full_path = os.path.join(data.WALLPAPERS_DIR, file_name)
 
         # --- HyDE Integration ---
-        # This command sequence ensures HyDE's wallbash is set to 'auto' mode (1)
-        # and then applies the new wallpaper, which triggers the color update scripts.
         hyde_lib_dir = os.path.expanduser("~/.local/lib/hyde")
-        
         apply_wallpaper_cmd = f"{hyde_lib_dir}/wallpaper.sh --set '{full_path}' --global"
         color_set = f"{hyde_lib_dir}/color.set.sh"
-
-        # Execute the commands
         
-        
-        print(f"HyDE: Set wallbash to auto and applied wallpaper: {full_path}")
+        # Temporarily pause file monitor to prevent duplicate processing
+        if hasattr(self, 'file_monitor'):
+            self.file_monitor.cancel()
+    
+        # Set up symlink for current wallpaper
+        current_wall = os.path.expanduser(f"~/.current.wall")
+        if os.path.isfile(current_wall) or os.path.islink(current_wall):
+            os.remove(current_wall)
+        os.symlink(full_path, current_wall)
+    
+        selected_scheme = self.scheme_dropdown.get_active_id()
+    
+        if self.matugen_switcher.get_active():
+            # Run commands asynchronously in the correct order
+            exec_shell_command_async(f'matugen image "{full_path}" -t {selected_scheme}')
+            exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
+            exec_shell_command_async(f"bash -c '{color_set}'")
+        else:
+            # Alternative commands
+            exec_shell_command_async(f"bash -c '{apply_wallpaper_cmd}'")
+            exec_shell_command_async(f"bash -c '{color_set}'")
+    
+        print(f"HyDE: Applied wallpaper: {full_path}")
+    
+        # Restore file monitor after a short delay
+        GLib.timeout_add(1000, self.setup_file_monitor)
         # --- End HyDE Integration ---
 
         # The original logic can be removed or commented out if HyDE handles everything.
@@ -501,16 +534,36 @@ class WallpaperSelector(Box):
     def _process_batch(self):
         batch = self.thumbnail_queue[:10]
         del self.thumbnail_queue[:10]
+        
+        # Use a local list to collect all new thumbnails before updating UI
+        new_thumbnails = []
+        
         for cache_path, file_name in batch:
             try:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file(cache_path)
-                self.thumbnails.append((pixbuf, file_name))
-                self.viewport.get_model().append([pixbuf, file_name])
+                # Only add to self.thumbnails, NOT directly to model
+                if not any(name == file_name for _, name in self.thumbnails):
+                    self.thumbnails.append((pixbuf, file_name))
+                    new_thumbnails.append((pixbuf, file_name))
             except Exception as e:
                 print(f"Error loading thumbnail {cache_path}: {e}")
+        
+        # Update the model only if we have search text
+        query = self.search_entry.get_text() if hasattr(self, 'search_entry') else ""
+        if query:
+            # Only update filtered model, not full rearrangement
+            model = self.viewport.get_model()
+            for pixbuf, file_name in new_thumbnails:
+                if query.casefold() in file_name.casefold():
+                    model.append([pixbuf, file_name])
+        else:
+            # If no search, do a full arrange only once per batch
+            if new_thumbnails:
+                GLib.idle_add(self.arrange_viewport, "")
+    
         if self.thumbnail_queue:
-            GLib.idle_add(self._process_batch)
-        return False
+            return GLib.SOURCE_CONTINUE
+        return GLib.SOURCE_REMOVE
 
     def _get_cache_path(self, file_name: str) -> str:
         file_hash = hashlib.md5(file_name.encode("utf-8")).hexdigest()

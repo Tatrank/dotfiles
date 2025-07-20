@@ -58,7 +58,7 @@ class Weather(Button):
                     
 
                     GLib.idle_add(super().set_visible, self.enabled)
-                    GLib.idle_add(self.label.set_label, weather_data.replace(" ", "").replace("+", " "))
+                    GLib.idle_add(self.label.set_label, weather_data.replace(" ", "").replace("+", ""))
             else:
                 self.has_weather_data = False
                 GLib.idle_add(self.label.set_markup, f"{icons.cloud_off} Unavailable")
