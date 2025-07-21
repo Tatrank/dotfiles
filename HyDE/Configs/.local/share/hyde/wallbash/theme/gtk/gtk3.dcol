@@ -1,78 +1,64 @@
-${themesDir}/Wallbash-Gtk/gtk-4.0/gtk.css|cp ${themesDir}/Wallbash-Gtk/gtk-4.0/gtk.css ${themesDir}/Wallbash-Gtk/gtk-4.0/gtk-dark.css
+${themesDir}/Wallbash-Gtk/gtk-3.0/gtk.css|cp ${themesDir}/Wallbash-Gtk/gtk-3.0/gtk.css ${themesDir}/Wallbash-Gtk/gtk-3.0/gtk-dark.css
 /* GTK NAMED COLORS -- USE RESPONSIBLY! */
 
-/* === MAIN TEXT AND BACKGROUND COLORS === */
-/* widget text/foreground color - Using txt1 for better contrast */
-@define-color theme_fg_color #<wallbash_txt1>;
-/* text color for entries, views and content */
-@define-color theme_text_color #<wallbash_txt1>;
-/* widget base background color - Using dark background */
+/* widget text/foreground color */
+@define-color theme_fg_color #<wallbash_4xa9>;
+/* text color for entries, views and content in general */
+@define-color theme_text_color #<wallbash_4xa9>;
+/* widget base background color */
 @define-color theme_bg_color #<wallbash_pry1>;
-/* text widgets base background color */
+/* text widgets and the like base background color */
 @define-color theme_base_color #<wallbash_pry1>;
-
-/* === SELECTION COLORS === */
-/* base background color of selections - Using vibrant secondary color */
-@define-color theme_selected_bg_color #<wallbash_pry3>;
-/* text/foreground color of selections - Ensured good contrast */
-@define-color theme_selected_fg_color #<wallbash_txt3>;
-
-/* === INSENSITIVE (DISABLED) COLORS === */
+/* base background color of selections */
+@define-color theme_selected_bg_color #<wallbash_4xa8>;
+/* text/foreground color of selections */
+@define-color theme_selected_fg_color <wallbash_txt4_rgba(0.87)>;
 /* base background color of insensitive widgets */
 @define-color insensitive_bg_color #<wallbash_pry1>;
-/* text foreground color of insensitive widgets - Semi-transparent for disabled look */
-@define-color insensitive_fg_color <wallbash_txt1_rgba(0.5)>;
-/* insensitive text widgets background - Slightly different shade */
+/* text foreground color of insensitive widgets */
+@define-color insensitive_fg_color <wallbash_4xa9_rgba(0.5)>;
+/* insensitive text widgets and the like base background color */
 @define-color insensitive_base_color #<wallbash_1xa1>;
-
-/* === BACKDROP (UNFOCUSED) WINDOW COLORS === */
-/* widget text color on backdrop windows */
-@define-color theme_unfocused_fg_color #<wallbash_txt1>;
-/* text color for entries on backdrop windows */
-@define-color theme_unfocused_text_color #<wallbash_txt1>;
+/* widget text/foreground color on backdrop windows */
+@define-color theme_unfocused_fg_color #<wallbash_4xa9>;
+/* text color for entries, views and content in general on backdrop windows */
+@define-color theme_unfocused_text_color #<wallbash_4xa9>;
 /* widget base background color on backdrop windows */
 @define-color theme_unfocused_bg_color #<wallbash_pry1>;
-/* text widgets background color on backdrop windows */
+/* text widgets and the like base background color on backdrop windows */
 @define-color theme_unfocused_base_color #<wallbash_pry1>;
-/* selection background on backdrop windows */
-@define-color theme_unfocused_selected_bg_color #<wallbash_pry3>;
-/* selection text on backdrop windows */
-@define-color theme_unfocused_selected_fg_color #<wallbash_txt3>;
+/* base background color of selections on backdrop windows */
+@define-color theme_unfocused_selected_bg_color #<wallbash_4xa8>;
+/* text/foreground color of selections on backdrop windows */
+@define-color theme_unfocused_selected_fg_color <wallbash_txt4_rgba(0.87)>;
 /* insensitive color on backdrop windows */
-@define-color unfocused_insensitive_color <wallbash_txt1_rgba(0.5)>;
-
-/* === BORDER COLORS === */
-/* widgets main borders color - Subtle borders */
-@define-color borders <wallbash_txt1_rgba(0.15)>;
-/* borders on backdrop windows */
-@define-color unfocused_borders <wallbash_txt1_rgba(0.12)>;
-
-/* === STATUS COLORS === */
-/* Warning, error and success colors - Standard semantic colors */
+@define-color unfocused_insensitive_color <wallbash_4xa9_rgba(0.5)>;
+/* widgets main borders color */
+@define-color borders <wallbash_4xa9_rgba(0.12)>;
+/* widgets main borders color on backdrop windows */
+@define-color unfocused_borders <wallbash_4xa9_rgba(0.12)>;
+/* these are pretty self explicative */
 @define-color warning_color #FDD633;
-@define-color error_color #<wallbash_2xa1>;  /* Using red accent color */
-@define-color success_color #<wallbash_4xa1>; /* Using green accent color */
-
-/* === WINDOW MANAGER COLORS === */
-@define-color wm_title #<wallbash_txt1>;
-@define-color wm_unfocused_title <wallbash_txt1_rgba(0.7)>;
-@define-color wm_highlight <wallbash_txt1_rgba(0.1)>;
+@define-color error_color #F28B82;
+@define-color success_color #81C995;
+/* these colors are exported for the window manager and shouldn't be used in applications,
+read if you used those and something break with a version upgrade you're on your own... */
+@define-color wm_title #<wallbash_4xa9>;
+@define-color wm_unfocused_title <wallbash_4xa9_rgba(0.7)>;
+@define-color wm_highlight <wallbash_4xa9_rgba(0.1)>;
 @define-color wm_bg #<wallbash_pry1>;
 @define-color wm_unfocused_bg #<wallbash_pry1>;
 @define-color wm_button_close_icon #<wallbash_pry1>;
-@define-color wm_button_close_hover_bg #<wallbash_2xa1>; /* Red for close button */
-@define-color wm_button_close_active_bg <wallbash_2xa1_rgba(0.7)>;
-
-/* === MISCELLANEOUS COLORS === */
+@define-color wm_button_close_hover_bg #<wallbash_4xa8>;
+@define-color wm_button_close_active_bg #c7c7c7;
+/* FIXME this is really an API */
 @define-color content_view_bg #<wallbash_pry1>;
-@define-color placeholder_text_color <wallbash_txt1_rgba(0.5)>;
-/* Text view background - Slightly different for better reading */
-@define-color text_view_bg #<wallbash_1xa2>;
-
-/* === INDICATOR COLORS === */
-@define-color budgie_tasklist_indicator_color #<wallbash_txt1>;
-@define-color budgie_tasklist_indicator_color_active #<wallbash_pry3>;
-@define-color budgie_tasklist_indicator_color_active_window #<wallbash_txt1>;
+@define-color placeholder_text_color silver;
+/* Very contrasty background for text views (@theme_text_color foreground) */
+@define-color text_view_bg #1d1d1d;
+@define-color budgie_tasklist_indicator_color #<wallbash_4xa9>;
+@define-color budgie_tasklist_indicator_color_active #<wallbash_4xa9>;
+@define-color budgie_tasklist_indicator_color_active_window #999999;
 @define-color budgie_tasklist_indicator_color_attention #FDD633;
 
 /* === STANDARD PALETTE - KEEPING DEFAULTS === */
@@ -127,61 +113,43 @@ ${themesDir}/Wallbash-Gtk/gtk-4.0/gtk.css|cp ${themesDir}/Wallbash-Gtk/gtk-4.0/g
 @define-color BLACK_700 #33302F;
 @define-color BLACK_900 #2B2928;
 
-/* === LIBADWAITA NAMED COLORS === */
-/* Accent/brand colors */
-@define-color accent_bg_color #<wallbash_pry2>;
-@define-color accent_fg_color #<wallbash_txt2>;
-@define-color accent_color #<wallbash_pry2>;
-
-/* Status colors with matching foregrounds */
-@define-color destructive_bg_color #<wallbash_2xa1>;
-@define-color destructive_fg_color #<wallbash_txt1>;
-@define-color destructive_color #<wallbash_2xa1>;
-
-@define-color success_bg_color #<wallbash_4xa1>;
-@define-color success_fg_color #<wallbash_txt1>;
-@define-color success_color #<wallbash_4xa1>;
-
+/* GTK LIBADWAITA NAMED COLORS -- USE RESPONSIBLY! */
+@define-color accent_bg_color #<wallbash_4xa8>;
+@define-color accent_fg_color <wallbash_txt4_rgba(0.87)>;
+@define-color accent_color #<wallbash_4xa8>;
+@define-color destructive_bg_color #F28B82;
+@define-color destructive_fg_color <wallbash_txt4_rgba(0.87)>;
+@define-color destructive_color #F28B82;
+@define-color success_bg_color #81C995;
+@define-color success_fg_color <wallbash_txt4_rgba(0.87)>;
+@define-color success_color #81C995;
 @define-color warning_bg_color #FDD633;
-@define-color warning_fg_color #<wallbash_txt1>;
+@define-color warning_fg_color <wallbash_txt4_rgba(0.87)>;
 @define-color warning_color #FDD633;
-
-@define-color error_bg_color #<wallbash_2xa1>;
-@define-color error_fg_color #<wallbash_txt1>;
-@define-color error_color #<wallbash_2xa1>;
-
-/* Window elements */
+@define-color error_bg_color #F28B82;
+@define-color error_fg_color <wallbash_txt4_rgba(0.87)>;
+@define-color error_color #F28B82;
 @define-color window_bg_color #<wallbash_pry1>;
-@define-color window_fg_color #<wallbash_txt1>;
-
+@define-color window_fg_color #<wallbash_4xa9>;
 @define-color view_bg_color #<wallbash_pry1>;
-@define-color view_fg_color #<wallbash_txt1>;
-
-/* Header bar specific */
-@define-color headerbar_bg_color #<wallbash_1xa1>;
-@define-color headerbar_fg_color #<wallbash_txt1>;
-@define-color headerbar_border_color <wallbash_txt1_rgba(0.15)>;
+@define-color view_fg_color #<wallbash_4xa9>;
+@define-color headerbar_bg_color #<wallbash_pry1>;
+@define-color headerbar_fg_color #<wallbash_4xa9>;
+@define-color headerbar_border_color <wallbash_4xa9_rgba(0.12)>;
 @define-color headerbar_backdrop_color @window_bg_color;
-@define-color headerbar_shade_color <wallbash_txt1_rgba(0.36)>;
+@define-color headerbar_shade_color <wallbash_txt4_rgba(0.36)>;
+@define-color card_bg_color #<wallbash_pry1>;
+@define-color card_fg_color #<wallbash_4xa9>;
+@define-color card_shade_color <wallbash_txt4_rgba(0.36)>;
+@define-color dialog_bg_color #<wallbash_pry1>;
+@define-color dialog_fg_color #<wallbash_4xa9>;
+@define-color popover_bg_color #<wallbash_pry1>;
+@define-color popover_fg_color #<wallbash_4xa9>;
+@define-color thumbnail_bg_color #<wallbash_pry1>;
+@define-color thumbnail_fg_color #<wallbash_4xa9>;
+@define-color shade_color <wallbash_txt4_rgba(0.36)>;
+@define-color scrollbar_outline_color <wallbash_txt4_rgba(0.5)>;
 
-/* Cards and dialogs */
-@define-color card_bg_color #<wallbash_1xa2>;
-@define-color card_fg_color #<wallbash_txt1>;
-@define-color card_shade_color <wallbash_txt1_rgba(0.36)>;
-
-@define-color dialog_bg_color #<wallbash_1xa1>;
-@define-color dialog_fg_color #<wallbash_txt1>;
-
-/* Popover and thumbnail */
-@define-color popover_bg_color #<wallbash_1xa1>;
-@define-color popover_fg_color #<wallbash_txt1>;
-
-@define-color thumbnail_bg_color #<wallbash_1xa2>;
-@define-color thumbnail_fg_color #<wallbash_txt1>;
-
-/* Utility colors */
-@define-color shade_color <wallbash_txt1_rgba(0.36)>;
-@define-color scrollbar_outline_color <wallbash_txt1_rgba(0.5)>;
 @keyframes ripple {
   to {
     background-size: 1000% 1000%;
